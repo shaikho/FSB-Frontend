@@ -20,10 +20,10 @@ const getBaseUrl = async () => {
 
 export const getToken = async (): Promise<string> => {
   const BASE_URL = await getBaseUrl();
-  const url = `${BASE_URL}/token`;
+  const url = `${BASE_URL}/getToken`;
   try {
     const response = await axios.get(url, {});
-    const token: string = response.data;
+    const token: string = response.data.access_token;
     if (!token) {
       throw new Error("Token not found in response");
     }
@@ -82,20 +82,23 @@ interface OpenCIF {
 
 export const sendOTP = async (
   email: string | undefined,
-  phone: string,
-  NATIONALID: string,
+  mobileNumber: string,
   datetime: Date,
   language: string
 ): Promise<SendOTPResponse> => {
   const BASE_URL = await getBaseUrl();
-  const url = `${BASE_URL}/SendOTP`;
+  const url = `${BASE_URL}/SendOtp`;
   try {
-    const response = await axios.post<SendOTPResponseA>(
+    const response = await axios.post(
       url,
-      { email, phone, NATIONALID, datetime, language },
-      {}
+      { email, mobileNumber }
     );
-    return response.data.result;
+    const sendOTPResponse: SendOTPResponse = {
+      responseCode: response.data.responseCode,
+      reqId: response.data.reqId,
+      responseMessage: response.data.responseMessage,
+    };
+    return sendOTPResponse;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       return { responseCode: -1, responseMessage: error.message, reqId: "" };
@@ -106,21 +109,23 @@ export const sendOTP = async (
 
 export const verifyOTP = async (
   email: string | undefined,
-  phone: string,
+  mobileNumber: string,
   datetime: Date,
   ReqId: string | undefined,
-  ver_code: string
+  otp: string
 ): Promise<VerifyOTPResponseA> => {
   const BASE_URL = await getBaseUrl();
-  const url = `${BASE_URL}/otpVerfication`;
+  const url = `${BASE_URL}/verifyOTP`;
   try {
-    const response = await axios.post<VerifyOTPResponse>(
+    const response = await axios.post(
       url,
-      { email, phone, datetime, ReqId, ver_code },
-      {}
+      { email, mobileNumber, otp }
     );
-
-    return response.data.result;
+    const verifyOTPResponse: VerifyOTPResponseA = {
+      responseCode: response.data.responseCode,
+      responseMessage: response.data.responseMessage
+    };
+    return verifyOTPResponse;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       return { responseCode: -1, responseMessage: error.message };
@@ -176,12 +181,12 @@ interface Tdata {
 }
 
 export const openCIF = async (
-  data: Tdata
+  data: any
 ): Promise<{ done: boolean; message: string }> => {
   const BASE_URL = await getBaseUrl();
-  const url = `${BASE_URL}/OpenCIFData`;
+  const url = `${BASE_URL}/openAccount`;
   try {
-    const response = await axios.post<OpenCIF>(url, data, {});
+    const response = await axios.post(url, data, {});
     console.log(response);
     if (response.data.responseCode === 0) {
       return { done: true, message: response.data.responseMessage };
@@ -192,23 +197,5 @@ export const openCIF = async (
     }
     console.log(error);
     return { done: false, message: "حدث خطأ" };
-  }
-};
-
-export const sendEmail = async (data: Tdata) => {
-  const BASE_URL = await getBaseUrl();
-  const url = `${BASE_URL}/Email/send-mail`;
-  const body = {
-    subject: "Data",
-    body: data,
-    toemail: "musab.abdalgafar@ms.sd.zain.com",
-  };
-  try {
-    const response = await axios.post<OpenCIF>(url, body, {});
-    console.log(response);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log(error);
-    }
   }
 };
