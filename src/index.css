@@ -1,0 +1,82 @@
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  /* outline: 1px solid red; */
+  padding: 0;
+  margin: 0;
+}
+body,
+html {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+body {
+  position: relative;
+  margin: 0;
+  font-family: "TheSansArabic-Light", "B Jadid Bold", "TheSansArabic-Bold",
+    "Exo SemiBold", "Exo Bold", "Exo Light", "Raleway SemiBold", "Raleway Light";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(to right, #000051, #000096);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* global.css */
+@font-face {
+  font-family: "B Jadid Bold";
+  src: url("/BJadidBold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "TheSansArabic-Light";
+  src: url("/THESANSARABIC-LIGHT.ttf") format("truetype");
+  font-weight: light;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "TheSansArabic-Bold";
+  src: url("/THESANSARABIC-BOLD.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Exo SemiBold";
+  src: url("/Exo-SemiBold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Exo Bold";
+  src: url("/Exo-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Exo Light";
+  src: url("/Exo-Light.ttf") format("truetype");
+  font-weight: light;
+  font-style: normal;
+}
+
+#root {
+  display: grid;
+  grid-template-rows: 80px 1fr;
+  height: 100dvh;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.uq-logo {
+  display: none !important;
+}
