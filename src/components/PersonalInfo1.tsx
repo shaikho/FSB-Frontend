@@ -1,5 +1,5 @@
 import { MenuItem, Select, TextField, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -9,6 +9,9 @@ import NavigationBtns from "../ui/NavigationBtns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Spinner from "../ui/Spinner";
 import { useNavigation } from "../contexts/NavigationProvider";
+import { openCIF } from "../axios";
+import { handleNext } from "../utility/navigationUtils";
+import { useNavigate } from "react-router-dom";
 
 type TPersonalInfo1Props = {
   setPersonalInfoStep: React.Dispatch<React.SetStateAction<number>>;
@@ -18,8 +21,16 @@ export default function PersonalInfo1({
   setPersonalInfoStep,
 }: TPersonalInfo1Props) {
   const { documentData, submittedData, setSubmittedData } = useAuth();
-  const { setCurrentStep } = useNavigation();
-  const { t, i18n } = useTranslation();
+  const {
+    setDone,
+    setCurrentStep,
+    steps,
+    currentStep,
+    setError,
+  } = useNavigation(); const { t, i18n } = useTranslation();
+  const contextValue = useAuth();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const schema = z.object({
     fullNameEnglish: z.string(),
     fullNameArabic: z.string().min(1, {
@@ -103,7 +114,8 @@ export default function PersonalInfo1({
     },
   });
 
-  const submitFunction = (formdata: FormFields) => {
+  const submitFunction = async (formdata: FormFields) => {
+    setIsLoading(true);
     setSubmittedData({
       ...submittedData,
       fullNameArabic: formdata.fullNameArabic,
@@ -117,10 +129,57 @@ export default function PersonalInfo1({
       dateofIssue: formdata.dateofIssue,
       dateofexpiry: formdata.dateofexpiry,
     });
-    setPersonalInfoStep(1);
+    // submit data to the server
+    const data = {
+      documentData: contextValue.documentData,
+      email: contextValue.email,
+      currency: contextValue.currency,
+      residency: contextValue.residency,
+      mobileNumber: contextValue.mobileNumber,
+      fullNameEnglish: contextValue.documentData.fullName,
+      fullNameArabic: contextValue.documentData.fullNameArabic,
+      dateofBirth: contextValue.documentData.dateOfBirthFormatted,
+      placeofBirth: contextValue.documentData.placeOfBirth,
+      gender: contextValue.documentData.sex,
+      IDNumber: contextValue.documentData.documentNumber,
+      nationalIDNumber: contextValue.documentData.identityNumber,
+      placeofIssue: contextValue.documentData.placeOfIssue,
+      dateofIssue: contextValue.documentData.issueDateFormatted,
+      dateofexpiry: contextValue.documentData.dateOfExpiryFormatted,
+      AcountryCode: contextValue.submittedData.AcountryCode,
+      AphoneNumber: contextValue.submittedData.AphoneNumber,
+      address: contextValue.submittedData.address,
+      occupation: contextValue.submittedData.occupation,
+      employer: contextValue.submittedData.employer,
+      averageIncome: contextValue.submittedData.averageIncome,
+      PresidentFamilyMember: contextValue.submittedData.PresidentFamilyMember,
+      MinisterPolitician: contextValue.submittedData.MinisterPolitician,
+      MemberofParliament: contextValue.submittedData.MemberofParliament,
+      MilitaryHighRank: contextValue.submittedData.MilitaryHighRank,
+      SeniorOfficial: contextValue.submittedData.SeniorOfficial,
+      ForeignDiplomatic: contextValue.submittedData.ForeignDiplomatic,
+      SubjecttoUSAtaxpayer: contextValue.submittedData.SubjecttoUSAtaxpayer,
+      MotherName: contextValue.submittedData.MotherName,
+      identityNumber: contextValue.submittedData.identityNumber,
+      signature: contextValue.signeture,
+      document: contextValue.document,
+      photo: contextValue.photo,
+      language: i18n.language.toUpperCase(),
+      WorkedInGoverment: contextValue.submittedData.WorkedInGoverment,
+      UsCitizen: contextValue.submittedData.UsCitizen,
+      UsResident: contextValue.submittedData.UsResident,
+      UsTaxPayer: contextValue.submittedData.UsTaxPayer,
+      UsAccount: contextValue.submittedData.UsAccount,
+    };
+    const { done, message } = await openCIF(data);
+    setDone(done);
+    setError(message);
+    setIsLoading(false);
+    setCurrentStep({ step: 8, title: "/display-personal-info", completed: true });
+    handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
   };
   useEffect(() => {
-    setCurrentStep({ step: 8, title: "/personal-info", completed: false });
+    setCurrentStep({ step: 8, title: "/display-personal-info", completed: false });
   }, [setCurrentStep]);
   return (
     <>
@@ -135,18 +194,12 @@ export default function PersonalInfo1({
           flexGrow: 1,
         }}
       >
-        <Typography variant="body3" color="initial" m={0} p={0} pb={2} fontSize={10} sx={{ color: '#000096' }}>
-          <Typography sx={{ fontWeight: 'bold', display: 'inline' }}>
-            {t("note")}
-          </Typography>
-          {t("verifyInformation")}
-        </Typography>
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("fullNameEnglish")}
         </Typography>
         <TextField
           type="text"
-          disabled={watch("fullNameEnglish") !== ""}
+          disabled={contextValue.documentData.fullName !== ""}
           id="fullNameEnglish"
           {...register("fullNameEnglish")}
           error={errors.fullNameEnglish?.message !== undefined}
@@ -162,7 +215,7 @@ export default function PersonalInfo1({
           {t("fullNameArabic")}
         </Typography>
         <TextField
-          disabled={watch("fullNameArabic") !== ""}
+          disabled={true}
           type="text"
           id="fullNameArabic"
           {...register("fullNameArabic")}
@@ -179,7 +232,7 @@ export default function PersonalInfo1({
           {t("dateofBirth")}
         </Typography>
         <TextField
-          disabled={watch("dateofBirth") !== ""}
+          disabled={true}
           type="text"
           id="dateofBirth"
           {...register("dateofBirth")}
@@ -193,7 +246,7 @@ export default function PersonalInfo1({
         </Typography>
         <TextField
           type="text"
-          disabled={watch("placeofBirth") !== ""}
+          disabled={true}
           id="placeofBirth"
           {...register("placeofBirth")}
           error={errors.placeofBirth?.message !== undefined}
@@ -240,7 +293,7 @@ export default function PersonalInfo1({
         <TextField
           type="text"
           id="IDNumber"
-          disabled={watch("IDNumber") !== ""}
+          disabled={true}
           error={errors.IDNumber?.message !== undefined}
           helperText={errors.IDNumber ? errors.IDNumber.message : ""}
           maxLength={9}
@@ -254,7 +307,7 @@ export default function PersonalInfo1({
         <TextField
           type="text"
           id="identityNumber"
-          disabled={watch("identityNumber") !== ""}
+          disabled={true}
           maxLength={15}
           error={errors.identityNumber?.message !== undefined}
           helperText={
@@ -270,7 +323,7 @@ export default function PersonalInfo1({
         <TextField
           type="text"
           id="placeofIssue"
-          disabled={watch("placeofIssue") !== ""}
+          disabled={true}
           error={errors.placeofIssue?.message !== undefined}
           helperText={errors.placeofIssue ? errors.placeofIssue.message : ""}
           {...register("placeofIssue")}
@@ -281,7 +334,7 @@ export default function PersonalInfo1({
           {t("dateofIssue")}
         </Typography>
         <TextField
-          disabled={watch("dateofIssue") !== ""}
+          disabled={true}
           type="text"
           id="dateofIssue"
           error={errors.dateofIssue?.message !== undefined}
@@ -294,7 +347,7 @@ export default function PersonalInfo1({
           {t("dateofexpiry")}
         </Typography>
         <TextField
-          disabled={watch("dateofexpiry") !== ""}
+          disabled={true}
           type="text"
           id="dateofexpiry"
           error={errors.dateofexpiry?.message !== undefined}

@@ -33,6 +33,16 @@ interface AuthContextProps {
   photo: string;
   nationalIDNumber: string;
   setNationalIDNumber: React.Dispatch<React.SetStateAction<string>>;
+  WorkedInGoverment: boolean | undefined;
+  setWorkedInGoverment: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  UsCitizen: boolean | undefined;
+  setUsCitizen: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  UsResident: boolean | undefined;
+  setUsResident: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  UsTaxPayer: boolean | undefined;
+  setUsTaxPayer: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  UsAccount: boolean | undefined;
+  setUsAccount: React.Dispatch<React.SetStateAction<boolean | undefined>>;
 }
 
 // Create the context with an initial value
@@ -64,6 +74,11 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [document, setDocument] = useState<number>(3);
   const [signeture, setSigneture] = useState<string | ArrayBuffer | null>(null);
   const [reqId, setReqId] = useState<string | undefined>("");
+  const [WorkedInGoverment, setWorkedInGoverment] = useState<boolean | undefined>(undefined);
+  const [UsCitizen, setUsCitizen] = useState<boolean | undefined>(undefined);
+  const [UsResident, setUsResident] = useState<boolean | undefined>(undefined);
+  const [UsTaxPayer, setUsTaxPayer] = useState<boolean | undefined>(undefined);
+  const [UsAccount, setUsAccount] = useState<boolean | undefined>(undefined);
   const [documentData, setDocumentData] = useState<TDocumentData>({
     fullName: "",
     fullNameArabic: "",
@@ -110,6 +125,14 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     SubjecttoUSAtaxpayer: undefined,
     MotherName: "",
     identityNumber: "",
+    maritalStatus: "",
+    partnerName: "",
+    placeOfResidency: "",
+    WorkedInGoverment: undefined,
+    UsCitizen: undefined,
+    UsResident: undefined,
+    UsTaxPayer: undefined,
+    UsAccount: undefined,
   });
 
   const contextValue: AuthContextProps = {
@@ -142,6 +165,16 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setReqId,
     nationalIDNumber,
     setNationalIDNumber,
+    WorkedInGoverment,
+    setWorkedInGoverment,
+    UsCitizen,
+    setUsCitizen,
+    UsResident,
+    setUsResident,
+    UsTaxPayer,
+    setUsTaxPayer,
+    UsAccount,
+    setUsAccount,
   };
 
   return (

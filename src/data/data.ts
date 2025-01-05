@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { TCountry, TCurrencies, TIdentityType } from "../types/types";
 export const currencies: TCurrencies[] = [
   { id: 938, title: "sudanesePound" },
@@ -8,17 +9,16 @@ export const currencies: TCurrencies[] = [
 ];
 
 export const steps = [
-  { step: 1, title: "/", completed: false },
-  { step: 2, title: "/otp", completed: false },
-  { step: 3, title: "/currency", completed: false },
-  { step: 4, title: "/identity-verification", completed: false },
-  { step: 5, title: "/residency", completed: false },
+  { step: 0, title: "/", completed: false },
+  { step: 1, title: "/terms", completed: false },
+  { step: 2, title: "/personal-info", completed: false },
+  { step: 3, title: "/email-verifcation", completed: false },
+  { step: 4, title: "/otp", completed: false },
+  { step: 5, title: "/identity-verification", completed: false },
   { step: 6, title: "/identity", completed: false },
   { step: 7, title: "/scan", completed: false },
-  { step: 8, title: "/personal-info", completed: false },
-  { step: 9, title: "/signeture", completed: false },
-  { step: 10, title: "/terms", completed: false },
-  { step: 11, title: "/done", completed: false },
+  { step: 8, title: "/display-personal-info", completed: false },
+  { step: 9, title: "/done", completed: false },
 ];
 
 export const identityTypes: TIdentityType[] = [
@@ -31,6 +31,9 @@ export const notes = [
   { id: 2, title: "note2" },
   { id: 3, title: "note3" },
 ];
+
+// export 
+
 export const gender = [
   { id: "M", title: "male" },
   { id: "F", title: "female" },

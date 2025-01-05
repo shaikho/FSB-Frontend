@@ -13,8 +13,6 @@ import { useNavigation } from "../contexts/NavigationProvider";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { handleNext, handleBack } from "../utility/navigationUtils";
-import { useAuth } from "../contexts/AuthProvider";
-import { openCIF } from "../axios";
 import Spinner from "../ui/Spinner";
 import usePreventBackNavigation from "../hooks/usePreventBackNavigation";
 
@@ -25,59 +23,19 @@ const OnboardingScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const {
-    setDone,
     isChecked,
     setIsChecked,
     setCurrentStep,
     steps,
     currentStep,
-    setError,
+    setPersonalInfoStep
   } = useNavigation();
-  const contextValue = useAuth();
   const handleSubmit = async () => {
     setIsLoading(true);
     if (isChecked) {
-      const data = {
-        documentData: contextValue.documentData,
-        email: contextValue.email,
-        currency: contextValue.currency,
-        residency: contextValue.residency,
-        mobileNumber: contextValue.mobileNumber,
-        fullNameEnglish: contextValue.submittedData.fullNameEnglish,
-        fullNameArabic: contextValue.submittedData.fullNameArabic,
-        dateofBirth: contextValue.submittedData.dateofBirth,
-        placeofBirth: contextValue.submittedData.placeofBirth,
-        gender: contextValue.submittedData.gender,
-        IDNumber: contextValue.submittedData.IDNumber,
-        nationalIDNumber: contextValue.submittedData.nationalIDNumber,
-        placeofIssue: contextValue.submittedData.placeofIssue,
-        dateofIssue: contextValue.submittedData.dateofIssue,
-        dateofexpiry: contextValue.submittedData.dateofexpiry,
-        AcountryCode: contextValue.submittedData.AcountryCode,
-        AphoneNumber: contextValue.submittedData.AphoneNumber,
-        address: contextValue.submittedData.address,
-        occupation: contextValue.submittedData.occupation,
-        employer: contextValue.submittedData.employer,
-        averageIncome: contextValue.submittedData.averageIncome,
-        PresidentFamilyMember: contextValue.submittedData.PresidentFamilyMember,
-        MinisterPolitician: contextValue.submittedData.MinisterPolitician,
-        MemberofParliament: contextValue.submittedData.MemberofParliament,
-        MilitaryHighRank: contextValue.submittedData.MilitaryHighRank,
-        SeniorOfficial: contextValue.submittedData.SeniorOfficial,
-        ForeignDiplomatic: contextValue.submittedData.ForeignDiplomatic,
-        SubjecttoUSAtaxpayer: contextValue.submittedData.SubjecttoUSAtaxpayer,
-        MotherName: contextValue.submittedData.MotherName,
-        identityNumber: contextValue.submittedData.identityNumber,
-        signature: contextValue.signeture,
-        document: contextValue.document,
-        photo: contextValue.photo,
-        language: i18n.language.toUpperCase(),
-      };
-      const { done, message } = await openCIF(data);
-      setDone(done);
-      setError(message);
-      setCurrentStep({ step: 10, title: "/terms", completed: true });
-      handleNext(setCurrentStep, currentStep.step, steps, navigate);
+      setCurrentStep({ step: 1, title: "/terms", completed: true });
+      handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
+      setPersonalInfoStep(1);
       setIsLoading(false);
     } else {
       const error = t("ErrorAgreeTerm");
@@ -86,7 +44,7 @@ const OnboardingScreen: React.FC = () => {
     }
   };
   useEffect(() => {
-    setCurrentStep({ step: 10, title: "/terms", completed: false });
+    setCurrentStep({ step: 1, title: "/terms", completed: false });
   }, [setCurrentStep]);
   return (
     <MainLayout>
@@ -104,7 +62,8 @@ const OnboardingScreen: React.FC = () => {
         <Typography variant="h1" color="primary">
           {t("Terms and Conditions")}
         </Typography>
-        <a
+        {/* link to pdf terms */}
+        {/* <a
           href={i18n.language === "en" ? "/TC-en.pdf" : "/TC-ar.pdf"}
           target="_blank"
           rel="noopener noreferrer"
@@ -115,7 +74,20 @@ const OnboardingScreen: React.FC = () => {
           }}
         >
           {t("Terms and Conditions")}
-        </a>
+        </a> */}
+
+        <Typography variant="body1" gutterBottom>
+          {t('termsText1')}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          {t('termsText2')}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          {t('termsText3')}
+        </Typography>
+
+        <br />
+
         <FormControlLabel
           label={t("termsAgree")}
           control={
@@ -145,7 +117,9 @@ const OnboardingScreen: React.FC = () => {
             direction: i18n.language === "ar" ? "rtl" : "ltr",
           }}
         >
+          {/* hidden back button here since this view is moved to be landing view */}
           <Button
+            sx={{ visibility: "hidden" }}
             disabled={isLoading}
             variant="outlined"
             onClick={() =>

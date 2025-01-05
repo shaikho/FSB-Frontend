@@ -94,12 +94,10 @@ export async function onboardingJourney({
           ) {
             setError(
               i18n.language === "en"
-                ? `Looks like your ${
-                    documentAuth === 3 ? "Passport" : "National ID"
-                  } was scanned from a screen Kindly try again and scan a real document`
-                : `يبدو انك قمت بمسح نسخة من ${
-                    documentAuth === 3 ? "جواز سفرك" : "بطاقة هويتك"
-                  } من شاشة او جهاز , الرجاء المحاولة مرة اخرى وذلك بمسح المستند الاصلي`
+                ? `Looks like your ${documentAuth === 3 ? "Passport" : "National ID"
+                } was scanned from a screen Kindly try again and scan a real document`
+                : `يبدو انك قمت بمسح نسخة من ${documentAuth === 3 ? "جواز سفرك" : "بطاقة هويتك"
+                } من شاشة او جهاز , الرجاء المحاولة مرة اخرى وذلك بمسح المستند الاصلي`
             );
             setOpen(true);
             navigate("/scan");
@@ -108,12 +106,10 @@ export async function onboardingJourney({
           ) {
             setError(
               i18n.language === "en"
-                ? `Looks like your ${
-                    documentAuth === 3 ? "Passport" : "National ID"
-                  } was scanned from a copy of your document Kindly try again and scan a real document`
-                : `يبدو انك قمت بمسح نسخة من ${
-                    documentAuth === 3 ? "جواز سفرك" : "بطاقة هويتك"
-                  } من نسخة مطبوعة , الرجاء المحاولة مرة اخرى وذلك بمسح المستند الاصلي`
+                ? `Looks like your ${documentAuth === 3 ? "Passport" : "National ID"
+                } was scanned from a copy of your document Kindly try again and scan a real document`
+                : `يبدو انك قمت بمسح نسخة من ${documentAuth === 3 ? "جواز سفرك" : "بطاقة هويتك"
+                } من نسخة مطبوعة , الرجاء المحاولة مرة اخرى وذلك بمسح المستند الاصلي`
             );
             setOpen(true);
             navigate("/scan");
@@ -123,12 +119,10 @@ export async function onboardingJourney({
           ) {
             setError(
               i18n.language === "en"
-                ? `Looks like your ${
-                    documentAuth === 3 ? "Passport" : "National ID"
-                  } was scanned from a document with a photo that was tampered or manipulated, Kindly try again and scan a real document`
-                : `يبدو انك قمت بمسح نسخة من ${
-                    documentAuth === 3 ? "جواز سفرك" : "بطاقة هويتك"
-                  } من نسخة تم التلاعب بها وتعديل الصورة الشخصية , الرجاء المحاولة مرة اخرى وذلك بمسح المستند الاصلي`
+                ? `Looks like your ${documentAuth === 3 ? "Passport" : "National ID"
+                } was scanned from a document with a photo that was tampered or manipulated, Kindly try again and scan a real document`
+                : `يبدو انك قمت بمسح نسخة من ${documentAuth === 3 ? "جواز سفرك" : "بطاقة هويتك"
+                } من نسخة تم التلاعب بها وتعديل الصورة الشخصية , الرجاء المحاولة مرة اخرى وذلك بمسح المستند الاصلي`
             );
             setOpen(true);
             setLoading(false);
@@ -157,8 +151,9 @@ export async function onboardingJourney({
             });
             setOpen(false);
             setError("");
+            setLoading(false);
             setCurrentStep({ step: 7, title: "/scan", completed: true });
-            handleNext(setCurrentStep, step, steps, navigate);
+            handleNext(setCurrentStep, step + 1, steps, navigate);
             setPersonalInfoStep(0);
           }
         } else {
@@ -172,6 +167,7 @@ export async function onboardingJourney({
         }
       },
       onError: (error: OperationError) => {
+        console.info("Error: ", error);
         setOpen(true);
         if (error.data) {
           const parsedError = parseJwt(error.data);

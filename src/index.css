@@ -19,7 +19,7 @@ body {
     "Exo SemiBold", "Exo Bold", "Exo Light", "Raleway SemiBold", "Raleway Light";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(to right, #000051, #000096);
+  background: linear-gradient(to right, #000051, #000082 );
 }
 
 code {

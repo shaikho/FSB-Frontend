@@ -35,7 +35,7 @@ const OTP: React.FC = () => {
   const { setCurrentStep, steps, currentStep } = useNavigation();
   const [tries, setTries] = useState<number>(0);
   const { t, i18n } = useTranslation();
-  const { nationalIDNumber, email, mobileNumber, reqId, setReqId } = useAuth();
+  const { email, mobileNumber, reqId, setReqId } = useAuth();
   const [resend, setResend] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -64,44 +64,44 @@ const OTP: React.FC = () => {
       setResend(true);
       return;
     }
-    setResend(false);
-    const otpValue = data.otp.join("");
-    try {
-      const response = await verifyOTP(
-        email,
-        mobileNumber,
-        new Date(),
-        reqId,
-        otpValue
-      );
-      if (response.responseCode === 0) {
-        setCurrentStep({ step: 2, title: "/otp", completed: true });
+    // setResend(false);
+    // const otpValue = data.otp.join("");
+    // try {
+    //   const response = await verifyOTP(
+    //     email,
+    //     mobileNumber,
+    //     new Date(),
+    //     reqId,
+    //     otpValue
+    //   );
+    //   if (response.responseCode === 0) {
+        setCurrentStep({ step: 4, title: "/otp", completed: true });
         setError("");
-        handleNext(setCurrentStep, currentStep.step, steps, navigate);
+        handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
         setReqId(undefined);
         setTries(0);
         setResend(false);
-      } else {
-        setTries((prev) => prev + 1);
-        setError(
-          i18n.language === "en"
-            ? "The code is not correct or has timed out"
-            : "الرمز غير صحيح او انتهت المدة"
-        );
-        setOpen(true);
-        setValue("otp", ["", "", "", "", "", ""], { shouldValidate: true });
-      }
-    } catch (error) {
-      if (error) {
-        setTries((prev) => prev + 1);
-        setError(
-          i18n.language === "en"
-            ? "The code is not correct or has timed out"
-            : "الرمز غير صحيح او انتهت المدة"
-        );
-        setOpen(true);
-      }
-    }
+    //   } else {
+    //     setTries((prev) => prev + 1);
+    //     setError(
+    //       i18n.language === "en"
+    //         ? "The code is not correct or has timed out"
+    //         : "الرمز غير صحيح او انتهت المدة"
+    //     );
+    //     setOpen(true);
+    //     setValue("otp", ["", "", "", "", "", ""], { shouldValidate: true });
+    //   }
+    // } catch (error) {
+    //   if (error) {
+    //     setTries((prev) => prev + 1);
+    //     setError(
+    //       i18n.language === "en"
+    //         ? "The code is not correct or has timed out"
+    //         : "الرمز غير صحيح او انتهت المدة"
+    //     );
+    //     setOpen(true);
+    //   }
+    // }
   };
 
   const handleChange = (index: number, value: string) => {
@@ -132,7 +132,7 @@ const OTP: React.FC = () => {
     setTries(0);
     setLoading(true);
     try {
-      const response = await sendOTP(email, mobileNumber, nationalIDNumber, new Date(), language);
+      const response = await sendOTP(email, mobileNumber, new Date(), language);
       if (response.responseCode === 0) {
         setReqId(response.reqId);
         setError("");
@@ -159,7 +159,7 @@ const OTP: React.FC = () => {
   };
 
   useEffect(() => {
-    setCurrentStep({ step: 2, title: "/otp", completed: false });
+    setCurrentStep({ step: 4, title: "/otp", completed: false });
   }, [setCurrentStep]);
 
   return (

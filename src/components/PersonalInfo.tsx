@@ -7,6 +7,7 @@ import PersonalInfo2 from "./PersonalInfo2";
 import Questionaire from "./Questionaire";
 import usePreventBackNavigation from "../hooks/usePreventBackNavigation";
 import { useNavigation } from "../contexts/NavigationProvider";
+
 export default function PersonalInfo() {
   usePreventBackNavigation();
   const { setCurrentStep, personalInfoStep, setPersonalInfoStep } =
@@ -31,7 +32,7 @@ export default function PersonalInfo() {
   ];
   useEffect(() => {
     if (setCurrentStep) {
-      setCurrentStep({ step: 8, title: "/personal-info", completed: false });
+      setCurrentStep({ step: 2, title: "/personal-info", completed: false });
     }
   }, [setCurrentStep]);
   return (

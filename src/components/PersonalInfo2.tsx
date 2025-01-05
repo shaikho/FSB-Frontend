@@ -1,21 +1,23 @@
 import {
   FormControl,
-  Grid,
-  InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useMemo } from "react";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { countryCodes } from "../data/data";
+// import { maritalStatus } from "../data/data";
 import NavigationBtns from "../ui/NavigationBtns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "../contexts/AuthProvider";
 import Spinner from "../ui/Spinner";
+import { handleNext } from "../utility/navigationUtils";
+import { useNavigation } from "../contexts/NavigationProvider";
+import { useNavigate } from "react-router-dom";
 
 type TPersonalInfo2Props = {
   setPersonalInfoStep: React.Dispatch<React.SetStateAction<number>>;
@@ -26,32 +28,15 @@ export default function PersonalInfo2({
 }: TPersonalInfo2Props) {
   const { t, i18n } = useTranslation();
   const { setSubmittedData, submittedData } = useAuth();
-
+  const { setCurrentStep, currentStep, steps, } = useNavigation();
+  const navigate = useNavigate();
+  const maritalStatus = [
+    { id: 1, title: t('single'), value: "Single" },
+    { id: 2, title: t('married'), value: "Married" },
+    { id: 3, title: t('divorced'), value: "Divorced" },
+    { id: 4, title: t('widowed'), value: "Widowed" },
+  ];
   const schma = z.object({
-    AcountryCode: z
-      .string()
-      .min(1)
-      .max(5, {
-        message:
-          i18n.language === "en"
-            ? "Country code is required."
-            : "كود البلد مطلوب.",
-      }),
-    AphoneNumber: z
-      .string()
-      .min(8, t("phoneMaxError"))
-      .max(10, t("phoneMaxError"))
-      .regex(/^\d+$/)
-      .refine(
-        (string) => {
-          const number = parseFloat(string);
-          return !isNaN(number) && isFinite(number);
-        },
-        { message: t("phoneMaxError") }
-      )
-      .refine((string) => string !== "0".repeat(string.length), {
-        message: t("phoneMaxError"),
-      }),
     address: z.string().min(5, {
       message:
         i18n.language === "en" ? "Address is required." : "العنوان مطلوب.",
@@ -70,6 +55,15 @@ export default function PersonalInfo2({
       message: i18n.language === "en" ? "Invalid format." : "صيغة غير صالحة.",
     }),
     MotherName: z.string().optional(),
+    partnerName: z.string().min(1, {
+      message: t('partnerNameErrorMessage')
+    }),
+    maritalStatus: z.string().min(1, {
+      message: t('maritalStatusErrorMessage')
+    }),
+    placeOfResidency: z.string().min(1, {
+      message: t('placeOfResidencyErrorMessage')
+    })
   });
   type FormFields = z.infer<typeof schma>;
   const {
@@ -82,25 +76,16 @@ export default function PersonalInfo2({
   } = useForm<FormFields>({
     resolver: zodResolver(schma),
     defaultValues: {
-      AcountryCode: submittedData.AcountryCode,
-      AphoneNumber: submittedData.AphoneNumber,
       MotherName: submittedData.MotherName,
       occupation: submittedData.occupation,
       address: submittedData.address,
       averageIncome: submittedData.averageIncome,
       employer: submittedData.employer,
+      partnerName: submittedData.partnerName,
+      maritalStatus: submittedData.maritalStatus,
+      placeOfResidency: submittedData.placeOfResidency
     },
   });
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value) && (value.length <= 8 || value.length <= 10)) {
-      if (value[0] === "0") {
-        setValue("AphoneNumber", value.slice(1, value.length), {
-          shouldValidate: true,
-        });
-      } else setValue("AphoneNumber", value, { shouldValidate: true });
-    }
-  };
 
   const averageIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -115,26 +100,25 @@ export default function PersonalInfo2({
       });
   };
 
-  const sortedCountries = useMemo(() => {
-    return countryCodes.sort((a, b) => {
-      const titleA = t(a.label);
-      const titleB = t(b.label);
-      return titleA.localeCompare(titleB, "ar");
+  const handleChange = (field: string) => (event: SelectChangeEvent<string>) => {
+    setSubmittedData({
+      ...submittedData,
+      [field]: event.target.value,
     });
-  }, [t]);
+  };
 
   const submitFunction = (formdata: FormFields) => {
     setSubmittedData({
       ...submittedData, // Spread the existing submittedData first
-      AcountryCode: formdata.AcountryCode,
-      AphoneNumber: formdata.AphoneNumber,
       MotherName: formdata.MotherName ? formdata.MotherName : "",
       occupation: formdata.occupation,
       address: formdata.address,
       averageIncome: formdata.averageIncome,
       employer: formdata.employer,
+      placeOfResidency: formdata.placeOfResidency,
     });
     setPersonalInfoStep(2);
+    handleNext(setCurrentStep, currentStep.step, steps, navigate);
   };
   return (
     <>
@@ -149,81 +133,6 @@ export default function PersonalInfo2({
         }}
       >
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
-          {t("AnotherPhoneNumber")}
-        </Typography>
-        <Grid
-          container
-          justifyContent="space-between"
-          flexWrap="nowrap"
-          spacing={1}
-        >
-          <Grid item xs={6} sx={{ flexGrow: 1, flexShrink: 0 }}>
-            <FormControl fullWidth>
-              <InputLabel id="country-code-label" sx={{ display: "none" }}>
-                {t("Country Code")}
-              </InputLabel>
-              <Controller
-                name="AcountryCode"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    aria-label="Country Codes"
-                    labelId="country-code-label"
-                    label="ACountry Code"
-                    error={Boolean(errors.AcountryCode)}
-                    onBlur={async () => {
-                      await trigger("AcountryCode");
-                    }}
-                  >
-                    <MenuItem value=""></MenuItem>
-                    {i18n.language === "en"
-                      ? countryCodes.map((option) => (
-                          <MenuItem key={option.label} value={option.code}>
-                            {t(`${option.label}`)} (
-                            {i18n.language === "en"
-                              ? option.code
-                              : `${option.code.slice(1, option.code.length)}+`}
-                            )
-                          </MenuItem>
-                        ))
-                      : sortedCountries.map((option) => (
-                          <MenuItem key={option.label} value={option.code}>
-                            {t(`${option.label}`)} (
-                            {i18n.language === "en"
-                              ? option.code
-                              : `${option.code.slice(1, option.code.length)}+`}
-                            )
-                          </MenuItem>
-                        ))}
-                  </Select>
-                )}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={6} sx={{ flexGrow: 0, flexShrink: 1 }}>
-            <Controller
-              name="AphoneNumber"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  fullWidth
-                  {...field}
-                  type="number"
-                  id="AphoneNumber"
-                  error={!!errors.AphoneNumber}
-                  helperText={errors.AphoneNumber?.message}
-                  placeholder={t("PhoneNumberPlaceholder")}
-                  onBlur={async () => {
-                    await trigger("AphoneNumber");
-                  }}
-                  onChange={handlePhoneNumberChange}
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
-        <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("MotherName")}
         </Typography>
         <TextField
@@ -231,6 +140,67 @@ export default function PersonalInfo2({
           id="MotherName"
           {...register("MotherName")}
           sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
+        />
+        <FormControl fullWidth>
+          <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
+            {t('maritalStatus')}
+          </Typography>
+          <Controller
+            name="maritalStatus"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                value={field.value || ""}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleChange("maritalStatus")(e);
+                }}
+                label={t('maritalStatus')}
+                error={!!errors.maritalStatus}
+              >
+                {maritalStatus.map((status) => (
+                  <MenuItem key={status.id} value={status.value}>
+                    {status.title}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
+          {errors.maritalStatus && (
+            <Typography variant="body2" color="error">
+              {errors.maritalStatus.message}
+            </Typography>
+          )}
+        </FormControl>
+        <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
+          {t('partnerName')}
+        </Typography>
+        <TextField
+          type="text"
+          id="partnerName"
+          {...register("partnerName")}
+          sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
+        />
+        {errors.partnerName && (
+          <Typography variant="body2" color="error">
+            {errors.partnerName.message}
+          </Typography>
+        )}
+
+        <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
+          {t("occupation")}
+        </Typography>
+        <TextField
+          type="text"
+          id="occupation"
+          error={errors.occupation?.message !== undefined}
+          helperText={errors.occupation ? errors.occupation.message : ""}
+          {...register("occupation")}
+          sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
+          onBlur={async () => {
+            await trigger("occupation");
+          }}
         />
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("address")}
@@ -247,20 +217,6 @@ export default function PersonalInfo2({
           }}
         />
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
-          {t("occupation")}
-        </Typography>
-        <TextField
-          type="text"
-          id="occupation"
-          error={errors.occupation?.message !== undefined}
-          helperText={errors.occupation ? errors.occupation.message : ""}
-          {...register("occupation")}
-          sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
-          onBlur={async () => {
-            await trigger("occupation");
-          }}
-        />
-        <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("employer")}
         </Typography>
         <TextField
@@ -272,6 +228,20 @@ export default function PersonalInfo2({
           sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
           onBlur={async () => {
             await trigger("employer");
+          }}
+        />
+        <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
+          {t('maritalStatus')}
+        </Typography>
+        <TextField
+          type="text"
+          id="placeOfResidency"
+          error={errors.placeOfResidency?.message !== undefined}
+          helperText={errors.placeOfResidency ? errors.placeOfResidency.message : ""}
+          {...register("placeOfResidency")}
+          sx={{ borderRadius: "10 px", margin: 0, fontSize: "12px" }}
+          onBlur={async () => {
+            await trigger("placeOfResidency");
           }}
         />
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>

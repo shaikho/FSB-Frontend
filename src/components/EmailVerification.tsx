@@ -16,14 +16,13 @@ import {
 import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { CheckCircleRounded } from "@mui/icons-material";
 import { useAuth } from "../contexts/AuthProvider";
 import { useNavigation } from "../contexts/NavigationProvider";
 import { handleNext } from "../utility/navigationUtils";
 import { countryCodes } from "../data/data";
 import { sendOTP } from "../axios";
 import Spinner from "../ui/Spinner";
-
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import { lazy } from "react";
 
 const RequestErrors = lazy(() => import("../ui/RequestErrors"));
@@ -40,8 +39,6 @@ const EmailVerification: React.FC = () => {
     setCountryCode,
     phoneNumber,
     setReqId,
-    nationalIDNumber,
-    setNationalIDNumber
   } = useAuth();
 
   const schema = z.object({
@@ -62,11 +59,6 @@ const EmailVerification: React.FC = () => {
       .refine((string) => string !== "0".repeat(string.length), {
         message: t("phoneMaxError"),
       }),
-    nationalIDNumber: z.string()
-      .min(11, { message: t('nationalIDNumberMaxError') })
-      .max(11, { message: t('nationalIDNumberMaxError') })
-      .regex(/^\d+$/, { message: t('nationalIDNumberMaxError') })
-      .refine(value => !isNaN(Number(value)), { message: t('nationalIDNumberMaxError') })
   });
 
   type FormFields = z.infer<typeof schema>;
@@ -79,7 +71,7 @@ const EmailVerification: React.FC = () => {
     setValue,
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
-    defaultValues: { nationalIDNumber, email, countryCode: "+249", phoneNumber: phoneNumber },
+    defaultValues: { email, countryCode: "+249", phoneNumber: phoneNumber },
     mode: "onBlur",
   });
 
@@ -87,44 +79,38 @@ const EmailVerification: React.FC = () => {
   const language = i18n.language;
   const onSubmit: SubmitHandler<FormFields> = useCallback(
     async (data) => {
-      setNationalIDNumber(data.nationalIDNumber);
-      setEmail(data.email.trim());
+      setEmail(data.email);
       setPhoneNumber(data.phoneNumber);
       setCountryCode(data.countryCode);
-      try {
-        const response = await sendOTP(
-          data.email.trim(),
-          data.countryCode.slice(1) + data.phoneNumber,
-          data.nationalIDNumber,
-          new Date(),
-          language
-        );
-        if (response.responseCode === 0) {
-          setReqId(response.reqId);
-          setCurrentStep({ step: 1, title: "/", completed: true });
-          handleNext(setCurrentStep, currentStep.step, steps, navigate);
-        } else {
-          setError(
-            response.responseMessage
-            // i18n.language === "en"
-            //   ? "An error occurred while sending OTP. Please try again."
-            //   : "حدث خطأ اثناء ارسال OTP. الرجاء المحاولة مرة اخرى."
-          );
-          setOpen(true);
-        }
-      } catch (error) {
-        if (error) {
-          setError(
-            i18n.language === "en"
-              ? "An error occurred while sending OTP. Please try again."
-              : "حدث خطأ اثناء ارسال OTP. الرجاء المحاولة مرة اخرى."
-          );
-          setOpen(true);
-        }
-      }
+      // try {
+      //   const response = await sendOTP(
+      //     data.email.trim(),
+      //     data.countryCode.slice(1) + data.phoneNumber,
+      //     new Date(),
+      //     language
+      //   );
+      //   if (response.responseCode === 0) {
+          // setReqId(response.reqId);
+          setCurrentStep({ step: 3, title: "/email-verifcation", completed: true });
+          handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
+      //   } else {
+      //     setError(
+      //       response.responseMessage
+      //     );
+      //     setOpen(true);
+      //   }
+      // } catch (error) {
+      //   if (error) {
+      //     setError(
+      //       i18n.language === "en"
+      //         ? "An error occurred while sending OTP. Please try again."
+      //         : "حدث خطأ اثناء ارسال OTP. الرجاء المحاولة مرة اخرى."
+      //     );
+      //     setOpen(true);
+      //   }
+      // }
     },
     [
-      setNationalIDNumber,
       setEmail,
       setPhoneNumber,
       setCountryCode,
@@ -167,22 +153,22 @@ const EmailVerification: React.FC = () => {
     [setValue]
   );
 
-  const handlenationalIDNumberChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      if (/^\d*$/.test(value) && (value.length <= 11)) {
-        if (value[0] === "0") {
-          setValue("nationalIDNumber", value.slice(1, value.length), {
-            shouldValidate: true,
-          });
-        } else setValue("nationalIDNumber", value, { shouldValidate: true });
-      }
-    },
-    [setValue]
-  );
+  // const handlenationalIDNumberChange = useCallback(
+  //   (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     const value = e.target.value;
+  //     if (/^\d*$/.test(value) && (value.length <= 11)) {
+  //       if (value[0] === "0") {
+  //         setValue("nationalIDNumber", value.slice(1, value.length), {
+  //           shouldValidate: true,
+  //         });
+  //       } else setValue("nationalIDNumber", value, { shouldValidate: true });
+  //     }
+  //   },
+  //   [setValue]
+  // );
 
   useEffect(() => {
-    setCurrentStep({ step: 1, title: "/", completed: false });
+    setCurrentStep({ step: 3, title: "/email-verifcation", completed: false });
   }, [setCurrentStep]);
 
   return (
@@ -218,7 +204,7 @@ const EmailVerification: React.FC = () => {
           <Typography variant="h1" color="primary">
             {t("email")}
           </Typography>
-          <CheckCircleRounded color="primary" sx={{ fontSize: 100 }} />
+          <MarkEmailReadIcon color="primary" sx={{ fontSize: 100 }} />
           <Typography variant="h2">{t("email2")}</Typography>
         </Box>
         <form
@@ -230,7 +216,7 @@ const EmailVerification: React.FC = () => {
             flexGrow: 1,
           }}
         >
-          <Controller
+          {/* <Controller
             name="nationalIDNumber"
             control={control}
             render={({ field }) => (
@@ -253,8 +239,8 @@ const EmailVerification: React.FC = () => {
                 }}
               />
             )}
-          />
-          <Grid container alignItems="center" my={2}>
+          /> */}
+          {/* <Grid container alignItems="center" my={2}>
             <Grid item xs={5}>
               <Divider />
             </Grid>
@@ -266,7 +252,7 @@ const EmailVerification: React.FC = () => {
             <Grid item xs={5}>
               <Divider />
             </Grid>
-          </Grid>
+          </Grid> */}
           <Controller
             name="email"
             control={control}

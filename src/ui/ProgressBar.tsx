@@ -24,10 +24,21 @@ function LinearProgressWithLabel(
 
 export default function ProgressBar() {
   const { currentStep } = useNavigation();
-  const progress =
+  const { personalInfoStep } = useNavigation();
+
+  let progress =
     currentStep.step === 1 || currentStep.step === 2
       ? 10
-      : (currentStep.step - 1) * 10;
+      : (currentStep.step - 1) * 14.28571428571429;
+
+  progress = progress > 0 ? progress - 10 : progress;
+  progress = Math.round(progress / 5) * 5;
+
+  if (currentStep.title === "/personal-info" && personalInfoStep === 1) {
+    progress = 10;
+  } else if (currentStep.title === "/personal-info" && personalInfoStep === 2) {
+    progress = 15;
+  }
 
   return (
     <Box sx={{ overflow: "hidden" }}>

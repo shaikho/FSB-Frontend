@@ -3,14 +3,11 @@ import MainLayout from "./MainLayout";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
-  AdminPanelSettings,
   ArrowBackIos,
   ArrowForwardIos,
-  CheckCircleOutlineRounded,
   CreditScore,
-  NoteAdd,
-  SecurityUpdateGood,
   SensorOccupied,
+  DocumentScanner
 } from "@mui/icons-material";
 import { useNavigation } from "../contexts/NavigationProvider";
 import { handleNext, handleBack } from "../utility/navigationUtils";
@@ -31,37 +28,18 @@ const IdentityVerification: React.FC = () => {
     {
       id: 2,
       id2: "الثانية",
+      icon: <DocumentScanner sx={{ fontSize: 40 }} />,
+      title: t("scanDocumentStep"),
+    }, {
+      id: 2,
+      id2: "الثالثة",
       icon: <SensorOccupied sx={{ fontSize: 40 }} />,
       title: t("takeSelfieStep"),
-    },
-    {
-      id: 3,
-      id2: "الثالثة",
-      icon: <AdminPanelSettings sx={{ fontSize: 40 }} />,
-      title: t("personalInfoStep"),
-    },
-    {
-      id: 4,
-      id2: "الرابعة",
-      icon: <NoteAdd sx={{ fontSize: 40 }} />,
-      title: t("addSignature"),
-    },
-    {
-      id: 5,
-      id2: "الخامسة",
-      icon: <SecurityUpdateGood sx={{ fontSize: 40 }} />,
-      title: t("Terms and Conditions"),
-    },
-    {
-      id: 6,
-      id2: "السادسة",
-      icon: <CheckCircleOutlineRounded sx={{ fontSize: 40 }} />,
-      title: t("submissionStep"),
     },
   ];
   useEffect(() => {
     setCurrentStep({
-      step: 4,
+      step: 5,
       title: "/identity-verification",
       completed: false,
     });
@@ -115,6 +93,9 @@ const IdentityVerification: React.FC = () => {
             );
           })}
         </Grid>
+        <Typography variant="h2" color="error" mt={2}>
+          {t('documentInstructions')}
+        </Typography>
         <Grid
           container
           justifyContent="space-between"
@@ -137,11 +118,11 @@ const IdentityVerification: React.FC = () => {
             variant="contained"
             onClick={() => {
               setCurrentStep({
-                step: 4,
+                step: 5,
                 title: "/identity-verification",
                 completed: true,
               });
-              handleNext(setCurrentStep, currentStep.step, steps, navigate);
+              handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
             }}
           >
             {t("next")}

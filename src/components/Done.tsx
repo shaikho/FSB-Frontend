@@ -24,7 +24,7 @@ export default function Done() {
   } = useAuth();
   const handleReset = () => {
     setIsChecked(false);
-    setCurrentStep({ step: 1, title: "/", completed: false });
+    setCurrentStep({ step: 0, title: "/", completed: false });
     setAgree(false);
     setCountryCode(undefined);
     setEmail("");
@@ -76,10 +76,18 @@ export default function Done() {
       SubjecttoUSAtaxpayer: undefined,
       MotherName: "",
       identityNumber: "",
+      maritalStatus: "",
+      partnerName: "",
+      placeOfResidency: "",
+      WorkedInGoverment: undefined,
+      UsCitizen: undefined,
+      UsTaxPayer: undefined,
+      UsAccount: undefined,
+      UsResident: undefined,
     });
   };
   useEffect(() => {
-    setCurrentStep({ step: 11, title: "/done", completed: false });
+    setCurrentStep({ step: 9, title: "/done", completed: false });
   }, [setCurrentStep]);
   return (
     <Grid

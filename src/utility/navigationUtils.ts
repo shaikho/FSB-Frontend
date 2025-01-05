@@ -10,6 +10,7 @@ export const handleNext = (
   if (step < steps.length) {
     const index = step;
     const nextRoute = steps[index].title;
+    console.log("nextRoute", nextRoute);
     navigate(nextRoute);
     setCurrentStep(steps[index]);
   }

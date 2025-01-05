@@ -40,7 +40,7 @@ const Identity: React.FC = () => {
         setDocument(2);
       } else setDocument(0);
       setCurrentStep({ step: 6, title: "/identity", completed: true });
-      handleNext(setCurrentStep, currentStep.step, steps, navigate);
+      handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
       setIsLoading(false);
       setOpen(false);
     } else {

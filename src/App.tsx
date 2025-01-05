@@ -33,13 +33,6 @@ function App() {
       </Box>
     );
   }
-
-  // return (
-  //   <>
-  //     <AppbarUI />
-  //     <RouterWrapper />
-  //   </>
-  // );
 }
 
 export default App;

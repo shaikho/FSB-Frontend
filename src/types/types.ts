@@ -71,4 +71,12 @@ export type TSubmittedData = {
   SubjecttoUSAtaxpayer: boolean | undefined;
   MotherName: string;
   identityNumber: string;
+  maritalStatus: string;
+  partnerName: string;
+  placeOfResidency: string;
+  WorkedInGoverment: boolean | undefined;
+  UsCitizen: boolean | undefined;
+  UsResident: boolean | undefined;
+  UsTaxPayer: boolean | undefined;
+  UsAccount: boolean | undefined;
 };

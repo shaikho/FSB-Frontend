@@ -8,7 +8,7 @@ export default function ErrorPage() {
   return (
     <Box
       sx={{
-        background: "linear-gradient(to right, #000051, #000096)",
+        background: "linear-gradient(to right, #000051, #000082 )",
         position: "fixed",
         left: 0,
         top: 0,

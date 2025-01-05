@@ -47,14 +47,14 @@ const Currency: React.FC = () => {
     nowCurrncy = nowCurrncy.filter((item) => item !== 938);
     nowCurrncy.push(938);
     setCurrency(nowCurrncy);
-    setCurrentStep({ step: 3, title: "/currency", completed: true });
-    handleNext(setCurrentStep, currentStep.step, steps, navigate);
+    setCurrentStep({ step: 7, title: "/currency", completed: true });
+    handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
   };
 
   usePreventBackNavigation();
 
   useEffect(() => {
-    setCurrentStep({ step: 3, title: "/currency", completed: false });
+    setCurrentStep({ step: 7, title: "/currency", completed: false });
   }, [setCurrentStep]);
 
   return (
@@ -102,8 +102,8 @@ const Currency: React.FC = () => {
                             const newValue = e.target.checked
                               ? [...field.value, currencyOption.id]
                               : field.value.filter(
-                                  (val) => val !== currencyOption.id
-                                );
+                                (val) => val !== currencyOption.id
+                              );
                             field.onChange(newValue);
                           }}
                         />

@@ -33,7 +33,7 @@ export default function AppbarUI() {
       position="relative"
       elevation={0}
       sx={{
-        background: "linear-gradient(to right, #000051, #000096)",
+        background: "linear-gradient(to right, #000051, #000082 )",
       }}
     >
       <Toolbar
@@ -47,10 +47,10 @@ export default function AppbarUI() {
         <LanguageSwitcher />
         <img
           src={i18n.language === "ar" ? values.logoAr : values.logo}
-          width={150}
-          height={120}
+          width={90}
+          height={80}
           alt="Pearl logo"
-          style={{ color: "#fff" }}
+          style={{ color: "#fff", marginLeft: 50, marginBottom: 20 }}
         />
         <span></span>
       </Toolbar>

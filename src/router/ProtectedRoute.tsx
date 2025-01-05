@@ -9,7 +9,6 @@ type ProtectedRouteProps = {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const navigate = useNavigate();
   const { currentStep } = useNavigation();
-
   useLayoutEffect(() => {
     if (currentStep.completed === false) {
       navigate(currentStep.title, { replace: true });

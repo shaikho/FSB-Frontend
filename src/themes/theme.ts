@@ -36,10 +36,10 @@ export const theme = createTheme({
   direction: i18n.language === "en" ? "ltr" : "rtl",
   palette: {
     primary: {
-      main: "#000096",
+      main: "#000051",
     },
     secondary: {
-      main: "#666666",
+      main: "#000082",
     },
   },
   typography: {

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import ProtectedRoute from "./ProtectedRoute";
 import Spinner from "../ui/Spinner";
+import DisplayPersonalInfo from "../components/DisplayPersonalInfo";
 const OnboardingScreen = lazy(() => import("../components/OnboardingScreen"));
 const EmailVerification = lazy(() => import("../components/EmailVerification"));
 const ErrorPage = lazy(() => import("../components/ErrorPage"));
@@ -20,45 +21,61 @@ export default function RouterWrapper() {
     <Router>
       <Suspense fallback={<Spinner />}>
         <Routes>
-          <Route path="/" element={<EmailVerification />} />
+          <Route path="/" element={<OnboardingScreen />} />
           <Route
             path="/terms"
             element={
-              //<ProtectedRoute>
+           //   <ProtectedRoute>
                 <OnboardingScreen />
-              //</ProtectedRoute>
+           //   </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/personal-info"
+            element={
+             // <ProtectedRoute>
+                <PersonalInfo />
+           //   </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/email-verifcation"
+            element={
+            //  <ProtectedRoute>
+                <EmailVerification />
+            //  </ProtectedRoute>
             }
           />
           <Route
             path="/residency"
             element={
-              //<ProtectedRoute>
+             // <ProtectedRoute>
                 <Residency />
-              //</ProtectedRoute>
+            //  </ProtectedRoute>
             }
           />
           <Route
             path="/otp"
             element={
-              //<ProtectedRoute>
+             // <ProtectedRoute>
                 <OTP />
-              //</ProtectedRoute>
+            //  </ProtectedRoute>
             }
           />
           <Route
             path="/currency"
             element={
-              //<ProtectedRoute>
+             // <ProtectedRoute>
                 <Currency />
-              //</ProtectedRoute>
+             // </ProtectedRoute>
             }
           />
           <Route
             path="/identity"
             element={
-              //<ProtectedRoute>
+             // <ProtectedRoute>
                 <Identity />
-              //</ProtectedRoute>
+             // </ProtectedRoute>
             }
           />
           <Route
@@ -66,7 +83,7 @@ export default function RouterWrapper() {
             element={
               //<ProtectedRoute>
                 <IdentityVerification />
-              //</ProtectedRoute>
+             // </ProtectedRoute>
             }
           />
           <Route
@@ -78,10 +95,10 @@ export default function RouterWrapper() {
             }
           />
           <Route
-            path="/personal-info"
+            path="/display-personal-info"
             element={
               //<ProtectedRoute>
-                <PersonalInfo />
+                <DisplayPersonalInfo />
               //</ProtectedRoute>
             }
           />
@@ -96,9 +113,9 @@ export default function RouterWrapper() {
           <Route
             path="/done"
             element={
-              // <ProtectedRoute>
+              //<ProtectedRoute>
                 <Done />
-              // </ProtectedRoute>
+              //</ProtectedRoute>
             }
           />
           <Route path="*" element={<ErrorPage />} />

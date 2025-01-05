@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/fawry_vite/public/favicon.ico"
-    />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
-    />
-    <title>Pearl</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/fawry_vite/public/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <title>Pearl</title>
+</head>
+
+<body>
+  <script src="node_modules/eruda/eruda.js"></script>
+  <script>
+    eruda.init();
+    let el = document.createElement('div');
+    document.body.appendChild(el);
+
+    eruda.init({
+      container: el,
+      tool: ['console', 'elements']
+    });
+  </script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
