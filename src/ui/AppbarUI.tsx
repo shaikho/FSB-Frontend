@@ -50,7 +50,7 @@ export default function AppbarUI() {
           width={90}
           height={80}
           alt="Pearl logo"
-          style={{ color: "#fff", marginLeft: 50, marginBottom: 20 }}
+          style={{ color: "#fff", marginLeft: 50, marginBottom: 3 }}
         />
         <span></span>
       </Toolbar>
