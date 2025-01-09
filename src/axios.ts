@@ -20,10 +20,10 @@ const getBaseUrl = async () => {
 
 export const getToken = async (): Promise<string> => {
   const BASE_URL = await getBaseUrl();
-  const url = `${BASE_URL}/getToken`;
+  const url = `${BASE_URL}/token`;
   try {
     const response = await axios.get(url, {});
-    const token: string = response.data.access_token;
+    const token: string = response.data;
     if (!token) {
       throw new Error("Token not found in response");
     }
