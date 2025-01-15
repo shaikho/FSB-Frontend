@@ -1,6 +1,4 @@
-import { ITextsArg } from "uqudosdk-preview-web";
-
-export const uqudoObjectEnglish: ITextsArg = {
+export const uqudoObjectEnglish = {
   startingCamera: "Starting Camera...",
   validating: "Validating...",
   processing: "Processing...",
@@ -45,6 +43,17 @@ export const uqudoObjectEnglish: ITextsArg = {
   facialRecognition: {
     title: "Facial Recognition",
     description: "Position head inside oval, then start recording",
+    livenessDetectionMessages: {
+      OK: "Hold your position",
+      MOVE_CLOSER: "Move closer to the oval",
+      GO_BACK: "Move further from the oval",
+      LOOK_STRAIGHT: "Look straight at the camera",
+      EYE_CLOSED: "Look straight at the camera",
+      MOVE_TO_CENTER: "Position your face inside the oval",
+      NO_PERSON_DETECTED: "No face detected",
+      MULTIPLE_PERSON_DETECTED: "Multiple faces detected",
+      ERROR: "Unknown Error, Refresh",
+    },
   },
 
   scan: [
@@ -163,7 +172,7 @@ export const uqudoObjectEnglish: ITextsArg = {
   },
 };
 
-export const uqudoObjectArabic: ITextsArg = {
+export const uqudoObjectArabic = {
   startingCamera: "تشغيل الكاميرا...",
   validating: "جارٍ التحقق...",
   processing: "جارٍ المعالجة...",
@@ -208,6 +217,17 @@ export const uqudoObjectArabic: ITextsArg = {
   facialRecognition: {
     title: "التعرف على الوجه",
     description: "ضع رأسك داخل الدائرة البيضاوية، ثم ابدأ التسجيل",
+    livenessDetectionMessages: {
+      OK: "أبقِ على وضعك",
+      MOVE_CLOSER: "اقترب أكثر من الدائرة البيضاوية",
+      GO_BACK: "ابتعد أكثر عن الدائرة البيضاوية",
+      LOOK_STRAIGHT: "انظر مباشرة إلى الكاميرا",
+      EYE_CLOSED: "انظر مباشرة إلى الكاميرا",
+      MOVE_TO_CENTER: "ضع وجهك داخل الدائرة البيضاوية",
+      NO_PERSON_DETECTED: "لم يتم اكتشاف وجه",
+      MULTIPLE_PERSON_DETECTED: "تم اكتشاف أكثر من وجه",
+      ERROR: "خطأ غير معروف، قم بالتحديث",
+    },
   },
 
   scan: [
