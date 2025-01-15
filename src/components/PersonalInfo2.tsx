@@ -6,7 +6,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -61,9 +61,7 @@ export default function PersonalInfo2({
     maritalStatus: z.string().min(1, {
       message: t('maritalStatusErrorMessage')
     }),
-    placeOfResidency: z.string().min(1, {
-      message: t('placeOfResidencyErrorMessage')
-    })
+    placeOfResidency: z.string().optional()
   });
   type FormFields = z.infer<typeof schma>;
   const {
@@ -115,11 +113,26 @@ export default function PersonalInfo2({
       address: formdata.address,
       averageIncome: formdata.averageIncome,
       employer: formdata.employer,
-      placeOfResidency: formdata.placeOfResidency,
+      placeOfResidency: formdata.placeOfResidency ? formdata.placeOfResidency : "N/A",
     });
     setPersonalInfoStep(2);
     handleNext(setCurrentStep, currentStep.step, steps, navigate);
   };
+
+  const addressRef = useRef(null);
+  const employerRef = useRef(null);
+  const averageIncomeRef = useRef(null);
+  const maritialStatusRef = useRef(null);
+  const partnerNameRef = useRef(null);
+  const occupationRef = useRef(null);
+
+  const handleKeyDown = (e: any, nextRef: any) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      nextRef.current.focus();
+    }
+  };
+
   return (
     <>
       {isSubmitting ? <Spinner /> : null}
@@ -140,6 +153,8 @@ export default function PersonalInfo2({
           id="MotherName"
           {...register("MotherName")}
           sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
+          tabIndex={1}
+          onKeyDown={(e) => handleKeyDown(e, maritialStatusRef)}
         />
         <FormControl fullWidth>
           <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
@@ -158,6 +173,9 @@ export default function PersonalInfo2({
                 }}
                 label={t('maritalStatus')}
                 error={!!errors.maritalStatus}
+                tabIndex={2}
+                inputRef={maritialStatusRef}
+                onKeyDown={(e) => handleKeyDown(e, partnerNameRef)}
               >
                 {maritalStatus.map((status) => (
                   <MenuItem key={status.id} value={status.value}>
@@ -167,11 +185,6 @@ export default function PersonalInfo2({
               </Select>
             )}
           />
-          {errors.maritalStatus && (
-            <Typography variant="body2" color="error">
-              {errors.maritalStatus.message}
-            </Typography>
-          )}
         </FormControl>
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t('partnerName')}
@@ -181,13 +194,14 @@ export default function PersonalInfo2({
           id="partnerName"
           {...register("partnerName")}
           sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
+          tabIndex={3}
+          inputRef={partnerNameRef}
         />
         {errors.partnerName && (
           <Typography variant="body2" color="error">
             {errors.partnerName.message}
           </Typography>
         )}
-
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("occupation")}
         </Typography>
@@ -201,6 +215,9 @@ export default function PersonalInfo2({
           onBlur={async () => {
             await trigger("occupation");
           }}
+          tabIndex={4}
+          inputRef={occupationRef}
+          onKeyDown={(e) => handleKeyDown(e, addressRef)}
         />
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("address")}
@@ -215,6 +232,9 @@ export default function PersonalInfo2({
           onBlur={async () => {
             await trigger("address");
           }}
+          tabIndex={4}
+          inputRef={addressRef}
+          onKeyDown={(e) => handleKeyDown(e, employerRef)}
         />
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("employer")}
@@ -229,20 +249,9 @@ export default function PersonalInfo2({
           onBlur={async () => {
             await trigger("employer");
           }}
-        />
-        <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
-          {t('maritalStatus')}
-        </Typography>
-        <TextField
-          type="text"
-          id="placeOfResidency"
-          error={errors.placeOfResidency?.message !== undefined}
-          helperText={errors.placeOfResidency ? errors.placeOfResidency.message : ""}
-          {...register("placeOfResidency")}
-          sx={{ borderRadius: "10 px", margin: 0, fontSize: "12px" }}
-          onBlur={async () => {
-            await trigger("placeOfResidency");
-          }}
+          tabIndex={5}
+          inputRef={employerRef}
+          onKeyDown={(e) => handleKeyDown(e, averageIncomeRef)}
         />
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("averageIncome")}
@@ -259,13 +268,27 @@ export default function PersonalInfo2({
             fontSize: "12px",
             marginBottom: "1rem",
           }}
+          tabIndex={6}
           onBlur={async () => {
             await trigger("averageIncome");
           }}
           onChange={averageIncomeChange}
+          inputRef={averageIncomeRef}
+          onKeyDown={(e) => handleKeyDown(e, null)}
         />
         <NavigationBtns isSubmitting={isSubmitting} />
       </form>
+      <Typography>
+        {Object.keys(errors).length > 0 && (
+          <div>
+            {Object.entries(errors).map(([key, error]) => (
+              <Typography key={key} variant="body2" color="error">
+                {error.message}
+              </Typography>
+            ))}
+          </div>
+        )}
+      </Typography>
     </>
   );
 }
