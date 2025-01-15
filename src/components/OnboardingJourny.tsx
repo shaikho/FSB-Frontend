@@ -1,8 +1,8 @@
 import {
   ReturnEnrollmentType,
-  IUqudoSdkConfig,
   OperationError,
-} from "uqudosdk-web";
+} from "uqudosdk-preview-web";
+import { IUqudoSdkConfig } from "uqudosdk-preview-web";
 import { parseJwt } from "./AuthAPI";
 import { handleNext } from "../utility/navigationUtils";
 import { TConfig, TDocumentData, TSteps } from "../types/types";
@@ -60,7 +60,7 @@ export async function onboardingJourney({
   } = values;
   try {
     const { default: uqudoSdkFactory, DocumentType } = await import(
-      "uqudosdk-web"
+      "uqudosdk-preview-web"
     );
     // Get the SDK configuration
     const config = await getConfig();
