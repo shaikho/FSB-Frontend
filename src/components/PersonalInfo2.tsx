@@ -29,6 +29,7 @@ export default function PersonalInfo2({
   const { t, i18n } = useTranslation();
   const { setSubmittedData, submittedData } = useAuth();
   const { setCurrentStep, currentStep, steps, } = useNavigation();
+  const [selectedMaritalStatus, setSelectedMaritalStatus] = React.useState("");
   const navigate = useNavigate();
   const maritalStatus = [
     { id: 1, title: t('single'), value: "Single" },
@@ -55,7 +56,12 @@ export default function PersonalInfo2({
       message: i18n.language === "en" ? "Invalid format." : "صيغة غير صالحة.",
     }),
     MotherName: z.string().optional(),
-    partnerName: z.string().min(1, {
+    partnerName: z.string().refine((val) => {
+      if (selectedMaritalStatus === "Married" && !val) {
+        return false;
+      }
+      return true;
+    }, {
       message: t('partnerNameErrorMessage')
     }),
     maritalStatus: z.string().min(1, {
@@ -103,9 +109,13 @@ export default function PersonalInfo2({
       ...submittedData,
       [field]: event.target.value,
     });
+    if (field === "maritalStatus") {
+      setSelectedMaritalStatus(event.target.value);
+    }
   };
 
   const submitFunction = (formdata: FormFields) => {
+    console.log(submittedData);
     setSubmittedData({
       ...submittedData, // Spread the existing submittedData first
       MotherName: formdata.MotherName ? formdata.MotherName : "",

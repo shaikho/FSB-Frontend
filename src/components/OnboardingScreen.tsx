@@ -63,7 +63,7 @@ const OnboardingScreen: React.FC = () => {
           {t("Terms and Conditions")}
         </Typography>
         {/* link to pdf terms */}
-        {/* <a
+        <a
           href={i18n.language === "en" ? "/TC-en.pdf" : "/TC-ar.pdf"}
           target="_blank"
           rel="noopener noreferrer"
@@ -71,12 +71,13 @@ const OnboardingScreen: React.FC = () => {
             display: "block",
             fontFamily:
               i18n.language === "en" ? "Exo SemiBold" : "TheSansArabic-Light",
+              fontSize: "1.2rem",
           }}
         >
           {t("Terms and Conditions")}
-        </a> */}
+        </a>
 
-        <Typography variant="body1" gutterBottom>
+        {/* <Typography variant="body1" gutterBottom>
           {t('termsText1')}
         </Typography>
         <Typography variant="body1" gutterBottom>
@@ -84,7 +85,7 @@ const OnboardingScreen: React.FC = () => {
         </Typography>
         <Typography variant="body1" gutterBottom>
           {t('termsText3')}
-        </Typography>
+        </Typography> */}
 
         <br />
 

@@ -2,6 +2,7 @@ import React from "react";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import {
+  Box,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -237,7 +238,21 @@ const Questionaire: React.FC = () => {
             </FormGroup>
           </FormControl>
         ))}
-        { }
+        <Box p={2} pb={4}>
+          <a
+            href={i18n.language === "en" ? "/TC-vatica-en.pdf" : "/TC-vatica-ar.pdf"}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "block",
+              fontFamily:
+                i18n.language === "en" ? "Exo SemiBold" : "TheSansArabic-Light",
+              fontSize: "1.2rem",
+            }}
+          >
+            {t("Terms and Conditions")}
+          </a>
+        </Box>
         <NavigationBtns isSubmitting={isSubmitting} />
       </form>
     </>
