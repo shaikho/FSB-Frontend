@@ -79,4 +79,5 @@ export type TSubmittedData = {
   UsResident: boolean | undefined;
   UsTaxPayer: boolean | undefined;
   UsAccount: boolean | undefined;
+  branch : string;
 };

@@ -37,6 +37,33 @@ export default function PersonalInfo2({
     { id: 3, title: t('divorced'), value: "Divorced" },
     { id: 4, title: t('widowed'), value: "Widowed" },
   ];
+  const branches = [
+    { code: "001", title: t("port_sudan") },
+    { code: "002", title: t("gadaref") },
+    { code: "003", title: t("white_nile") },
+    { code: "004", title: t("wad_madani") },
+    { code: "005", title: t("omdurman") },
+    { code: "006", title: t("damazin") },
+    { code: "007", title: t("managil") },
+    { code: "008", title: t("sinnar") },
+    { code: "009", title: t("blue_nile") },
+    { code: "010", title: t("halfa_jadida") },
+    { code: "011", title: t("sajana") },
+    { code: "012", title: t("rabak") },
+    { code: "013", title: t("hasahisa") },
+    { code: "014", title: t("souk_libya") },
+    { code: "015", title: t("khartoum") },
+    { code: "016", title: t("khartoum_2") },
+    { code: "017", title: t("khartoum_bahri") },
+    { code: "018", title: t("jumhuriya") },
+    { code: "019", title: t("local_market") },
+    { code: "020", title: t("garden_city") },
+    { code: "021", title: t("riyadh") },
+    { code: "022", title: t("atbara") },
+    { code: "023", title: t("mamoura") },
+    { code: "024", title: t("janeed") },
+    { code: "025", title: t("kadro") },
+  ];
   const schma = z.object({
     address: z.string().min(5, {
       message:
@@ -67,7 +94,10 @@ export default function PersonalInfo2({
     maritalStatus: z.string().min(1, {
       message: t('maritalStatusErrorMessage')
     }),
-    placeOfResidency: z.string().optional()
+    placeOfResidency: z.string().optional(),
+    branch: z.string().min(1, {
+      message: i18n.language === "en" ? "Branch is required." : "الفرع مطلوب.",
+    }),
   });
   type FormFields = z.infer<typeof schma>;
   const {
@@ -286,8 +316,35 @@ export default function PersonalInfo2({
           inputRef={averageIncomeRef}
           onKeyDown={(e) => handleKeyDown(e, null)}
         />
+        <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
+          {t("closestbranch")}
+        </Typography>
+        <Controller
+          name="branch"
+          control={control}
+          render={({ field }) => (
+            <Select
+              {...field}
+              value={field.value || ""}
+              onChange={(e) => {
+                field.onChange(e);
+                handleChange("branch")(e);
+              }}
+              label={t("closestbranch")}
+              error={!!errors.placeOfResidency}
+              tabIndex={7}
+            >
+              {branches.map((branch) => (
+                <MenuItem key={branch.code} value={branch.code}>
+                  {branch.title}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
+        />
         <NavigationBtns isSubmitting={isSubmitting} />
       </form>
+      <br />
       <Typography>
         {Object.keys(errors).length > 0 && (
           <div>

@@ -11,6 +11,7 @@ import { steps } from "../data/data";
 import { useNavigate } from "react-router-dom";
 import signatureImg from "../assets/images/signatureImg.png";
 import usePreventBackNavigation from "../hooks/usePreventBackNavigation";
+import { openCIF } from "../axios";
 
 // Styling for the image preview
 const ImgPreview = styled("img")({
@@ -25,11 +26,12 @@ const Signeture: React.FC = () => {
   const { setSigneture } = useAuth();
   const { t, i18n } = useTranslation();
   const [img, setImg] = useState("");
-  const { setCurrentStep, currentStep } = useNavigation();
+  const { setCurrentStep, currentStep, setDone } = useNavigation();
   const navigate = useNavigate();
+  const contextValue = useAuth();
 
   // Handler for file input change
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setImg(URL.createObjectURL(file));
@@ -45,6 +47,55 @@ const Signeture: React.FC = () => {
 
       reader.readAsDataURL(file);
     }
+
+    // after successful upload, submit data to backend
+    // submit data to the server
+    const data = {
+      documentData: contextValue.documentData,
+      email: contextValue.email,
+      currency: contextValue.currency,
+      residency: contextValue.residency,
+      mobileNumber: contextValue.mobileNumber,
+      fullNameEnglish: contextValue.documentData.fullName,
+      fullNameArabic: contextValue.documentData.fullNameArabic,
+      dateofBirth: contextValue.documentData.dateOfBirthFormatted,
+      placeofBirth: contextValue.documentData.placeOfBirth,
+      gender: contextValue.documentData.sex,
+      IDNumber: contextValue.documentData.documentNumber,
+      nationalIDNumber: contextValue.documentData.identityNumber,
+      placeofIssue: contextValue.documentData.placeOfIssue,
+      dateofIssue: contextValue.documentData.issueDateFormatted,
+      dateofexpiry: contextValue.documentData.dateOfExpiryFormatted,
+      AcountryCode: contextValue.submittedData.AcountryCode,
+      AphoneNumber: contextValue.submittedData.AphoneNumber,
+      address: contextValue.submittedData.address,
+      occupation: contextValue.submittedData.occupation,
+      employer: contextValue.submittedData.employer,
+      averageIncome: contextValue.submittedData.averageIncome,
+      PresidentFamilyMember: contextValue.submittedData.PresidentFamilyMember,
+      MinisterPolitician: contextValue.submittedData.MinisterPolitician,
+      MemberofParliament: contextValue.submittedData.MemberofParliament,
+      MilitaryHighRank: contextValue.submittedData.MilitaryHighRank,
+      SeniorOfficial: contextValue.submittedData.SeniorOfficial,
+      ForeignDiplomatic: contextValue.submittedData.ForeignDiplomatic,
+      SubjecttoUSAtaxpayer: contextValue.submittedData.SubjecttoUSAtaxpayer,
+      MotherName: contextValue.submittedData.MotherName,
+      identityNumber: contextValue.submittedData.identityNumber,
+      signature: contextValue.signeture,
+      document: contextValue.document,
+      photo: contextValue.photo,
+      language: i18n.language.toUpperCase(),
+      WorkedInGoverment: contextValue.submittedData.WorkedInGoverment,
+      UsCitizen: contextValue.submittedData.UsCitizen,
+      UsResident: contextValue.submittedData.UsResident,
+      UsTaxPayer: contextValue.submittedData.UsTaxPayer,
+      UsAccount: contextValue.submittedData.UsAccount,
+    };
+    const { done, message } = await openCIF(data);
+    setDone(done);
+    setError(message);
+    setCurrentStep({ step: 9, title: "/signeture", completed: true });
+    handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
   };
   usePreventBackNavigation();
   useEffect(() => {

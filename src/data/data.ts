@@ -18,7 +18,8 @@ export const steps = [
   { step: 6, title: "/identity", completed: false },
   { step: 7, title: "/scan", completed: false },
   { step: 8, title: "/display-personal-info", completed: false },
-  { step: 9, title: "/done", completed: false },
+  { step: 9, title: "/signeture", completed: false },
+  { step: 10, title: "/done", completed: false },
 ];
 
 export const identityTypes: TIdentityType[] = [
@@ -31,8 +32,6 @@ export const notes = [
   { id: 2, title: "note2" },
   { id: 3, title: "note3" },
 ];
-
-// export 
 
 export const gender = [
   { id: "M", title: "male" },
