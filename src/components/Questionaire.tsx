@@ -23,7 +23,6 @@ import { steps } from "../data/data";
 const Questionaire: React.FC = () => {
   const { setCurrentStep, currentStep } = useNavigation();
   const [errorChoose, setErrorChoose] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const questions1: TQuestion[] = [
@@ -69,22 +68,16 @@ const Questionaire: React.FC = () => {
   });
 
   const submitFunction = (formdata: FormFields) => {
-    if (isChecked) {
-
-      setCurrentStep({ step: 2, title: "/personal-info", completed: true });
-      setSubmittedData({
-        ...submittedData,
-        WorkedInGoverment: formdata.WorkedInGoverment,
-        UsCitizen: formdata.UsCitizen,
-        UsResident: formdata.UsResident,
-        UsTaxPayer: formdata.UsTaxPayer,
-        UsAccount: formdata.UsAccount
-      });
-      handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
-    } else {
-      const error = t("ErrorAgreeTerm");
-      setErrorChoose(error);
-    }
+    setCurrentStep({ step: 2, title: "/personal-info", completed: true });
+    setSubmittedData({
+      ...submittedData,
+      WorkedInGoverment: formdata.WorkedInGoverment,
+      UsCitizen: formdata.UsCitizen,
+      UsResident: formdata.UsResident,
+      UsTaxPayer: formdata.UsTaxPayer,
+      UsAccount: formdata.UsAccount
+    });
+    handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
   };
 
   const isSmallScreen = useMediaQuery("(max-width:384px)");
@@ -246,41 +239,11 @@ const Questionaire: React.FC = () => {
             </FormGroup>
           </FormControl>
         ))}
-        <FormControlLabel
-          label={t("termsAgree")}
-          control={
-            <Checkbox
-              checked={isChecked}
-              onChange={() => setIsChecked(!isChecked)}
-              sx={{
-                fontFamily:
-                  i18n.language === "en"
-                    ? "Exo SemiBold"
-                    : "TheSansArabic-Light",
-              }}
-            />
-          }
-        />
         {errorChoose !== "" ? (
           <Typography variant="body1" color="initial" sx={{ color: "red" }}>
             {errorChoose}
           </Typography>
         ) : null}
-        <Box p={2} pb={4}>
-          <a
-            href={i18n.language === "en" ? "/TC-vatica-en.pdf" : "/TC-vatica-ar.pdf"}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "block",
-              fontFamily:
-                i18n.language === "en" ? "Exo SemiBold" : "TheSansArabic-Light",
-              fontSize: "1.2rem",
-            }}
-          >
-            {t("Terms and Conditions")}
-          </a>
-        </Box>
         <NavigationBtns isSubmitting={isSubmitting} />
       </form>
     </>

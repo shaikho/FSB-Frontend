@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import MainLayout from "../ui/MainLayout";
 import {
   Button,
@@ -7,6 +7,7 @@ import {
   Grid,
   Typography,
   Box,
+  TextField,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useNavigation } from "../contexts/NavigationProvider";
@@ -15,6 +16,11 @@ import { useNavigate } from "react-router-dom";
 import { handleNext, handleBack } from "../utility/navigationUtils";
 import Spinner from "../ui/Spinner";
 import usePreventBackNavigation from "../hooks/usePreventBackNavigation";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuth } from "../contexts/AuthProvider";
+import { getCustomerCivilRecord } from "../axios";
 
 const OnboardingScreen: React.FC = () => {
   const [errorChoose, setErrorChoose] = useState("");
@@ -30,9 +36,51 @@ const OnboardingScreen: React.FC = () => {
     currentStep,
     setPersonalInfoStep
   } = useNavigation();
+  const { nationalIDNumber, setNationalIDNumber } = useAuth();
+  const schema = z.object({
+    nationalIDNumber: z.string()
+      .min(11, { message: t('nationalIDNumberMaxError') })
+      .max(11, { message: t('nationalIDNumberMaxError') })
+      .regex(/^\d+$/, { message: t('nationalIDNumberMaxError') })
+      .refine(value => !isNaN(Number(value)), { message: t('nationalIDNumberMaxError') })
+  });
+
+  type FormFields = z.infer<typeof schema>;
+
+  const {
+    control,
+
+    formState: { errors, isSubmitting },
+    trigger,
+    setValue,
+  } = useForm<FormFields>({
+    resolver: zodResolver(schema),
+    defaultValues: { nationalIDNumber: "" },
+    mode: "onBlur",
+  });
+  const handlenationalIDNumberChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (/^\d*$/.test(value) && (value.length <= 11)) {
+        if (value[0] === "0") {
+          setValue("nationalIDNumber", value.slice(1, value.length), {
+            shouldValidate: true,
+          });
+        } else {
+          setNationalIDNumber(value);
+          setValue("nationalIDNumber", value, { shouldValidate: true })
+        };
+      }
+    },
+    [setValue]
+  );
+
   const handleSubmit = async () => {
     setIsLoading(true);
     if (isChecked) {
+      var response = await getCustomerCivilRecord(nationalIDNumber);
+      console.log(response);
+      // based on response restrict progressing further
       setCurrentStep({ step: 1, title: "/terms", completed: true });
       handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
       setPersonalInfoStep(1);
@@ -62,6 +110,34 @@ const OnboardingScreen: React.FC = () => {
         <Typography variant="h1" color="primary">
           {t("Terms and Conditions")}
         </Typography>
+        <Typography variant="body1" color="initial" m={0} p={0} fontSize={13}>
+          {t("nationalIDNumber")}
+        </Typography>
+        <Controller
+          name="nationalIDNumber"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              fullWidth
+              {...field}
+              variant="outlined"
+              placeholder={t("nationalIDNumberPlaceholder")}
+              error={!!errors.nationalIDNumber}
+              helperText={errors.nationalIDNumber?.message}
+              onBlur={async () => {
+                field.onBlur();
+                await trigger("nationalIDNumber");
+              }}
+              onChange={handlenationalIDNumberChange}
+              InputProps={{
+                endAdornment: !field.value && (
+                  <Typography color="error" pt={2}>*</Typography>
+                ),
+              }}
+            />
+          )}
+        />
+        <br />
         {/* link to pdf terms */}
         <a
           href={i18n.language === "en" ? "/TC-en.pdf" : "/TC-ar.pdf"}
@@ -71,24 +147,12 @@ const OnboardingScreen: React.FC = () => {
             display: "block",
             fontFamily:
               i18n.language === "en" ? "Exo SemiBold" : "TheSansArabic-Light",
-              fontSize: "1.2rem",
+            fontSize: "1.2rem",
           }}
         >
           {t("Terms and Conditions")}
         </a>
-
-        {/* <Typography variant="body1" gutterBottom>
-          {t('termsText1')}
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          {t('termsText2')}
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          {t('termsText3')}
-        </Typography> */}
-
         <br />
-
         <FormControlLabel
           label={t("termsAgree")}
           control={

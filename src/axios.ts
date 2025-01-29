@@ -18,6 +18,14 @@ const getBaseUrl = async () => {
   return baseUrl;
 };
 
+const getCivilRegisterUrl = async () => {
+  const response = await fetch("/config.ini");
+  const text = await response.text();
+  const parsedConfig = ini.parse(text);
+  const civilRegisteryUrl = parsedConfig.civilRegisteryUrl;
+  return civilRegisteryUrl;
+}
+
 export const getToken = async (): Promise<string> => {
   const BASE_URL = await getBaseUrl();
   const url = `${BASE_URL}/token`;
@@ -197,5 +205,49 @@ export const openCIF = async (
     }
     console.log(error);
     return { done: false, message: "حدث خطأ" };
+  }
+};
+
+export const getCustomerCivilRecord = async (NID: string): Promise<{
+  fullNameArabic: string;
+  fullNameEnglish: string;
+  responseCode: number;
+  responseMessage: string;
+}> => {
+  const civilRegisterUrl = await getCivilRegisterUrl();
+  const url = `${civilRegisterUrl}/CRSAPI/Services/GetCRSData`;
+
+  try {
+    const response = await axios.post(url, { NID });
+    console.log(response);
+    if (response.data.result.responseCode === 200) {
+      const data = response.data.result;
+
+      // Constructing full names from the civil register response
+      const fullNameArabic = `${data.NAME} ${data.FATHER_NAME} ${data.GRAND_FATHER_NAME} ${data.GRE_GRA_FATHER_NAME}`.trim();
+      const fullNameEnglish = `${data.LAST_NAME} ${data.FIRST_NAMES}`.trim();
+
+      return {
+        fullNameArabic,
+        fullNameEnglish,
+        responseCode: data.responseCode,
+        responseMessage: data.responseMessage,
+      };
+    } else {
+      return {
+        fullNameArabic: "",
+        fullNameEnglish: "",
+        responseCode: response.data.result.responseCode,
+        responseMessage: response.data.result.responseMessage,
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    return {
+      fullNameArabic: "",
+      fullNameEnglish: "",
+      responseCode: -1,
+      responseMessage: "Error",
+    };
   }
 };
