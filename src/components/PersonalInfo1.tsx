@@ -9,27 +9,22 @@ import NavigationBtns from "../ui/NavigationBtns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Spinner from "../ui/Spinner";
 import { useNavigation } from "../contexts/NavigationProvider";
-import { openCIF } from "../axios";
-import { handleNext } from "../utility/navigationUtils";
 import { useNavigate } from "react-router-dom";
+import { handleNext } from "../utility/navigationUtils";
 
 type TPersonalInfo1Props = {
   setPersonalInfoStep: React.Dispatch<React.SetStateAction<number>>;
 };
 
-export default function PersonalInfo1({
-  setPersonalInfoStep,
-}: TPersonalInfo1Props) {
+export default function PersonalInfo1({ setPersonalInfoStep }: TPersonalInfo1Props) {
   const { documentData, submittedData, setSubmittedData } = useAuth();
   const {
-    setDone,
     setCurrentStep,
-    steps,
     currentStep,
-    setError,
+    steps
   } = useNavigation(); const { t, i18n } = useTranslation();
-  const contextValue = useAuth();
   const navigate = useNavigate();
+  const contextValue = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const schema = z.object({
     fullNameEnglish: z.string(),
@@ -115,6 +110,7 @@ export default function PersonalInfo1({
   });
 
   const submitFunction = async (formdata: FormFields) => {
+    console.log("Form submitted with data:", formdata);
     setIsLoading(true);
     setSubmittedData({
       ...submittedData,
@@ -129,6 +125,8 @@ export default function PersonalInfo1({
       dateofIssue: formdata.dateofIssue,
       dateofexpiry: formdata.dateofexpiry,
     });
+    setCurrentStep({ step: 8, title: "/display-personal-info", completed: true });
+    handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
   };
   useEffect(() => {
     setCurrentStep({ step: 8, title: "/display-personal-info", completed: false });

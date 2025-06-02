@@ -36,7 +36,7 @@ const OnboardingScreen: React.FC = () => {
     currentStep,
     setPersonalInfoStep
   } = useNavigation();
-  const { nationalIDNumber, setNationalIDNumber } = useAuth();
+  const { nationalIDNumber, setNationalIDNumber, submittedData, setSubmittedData } = useAuth();
   const schema = z.object({
     nationalIDNumber: z.string()
       .min(11, { message: t('nationalIDNumberMaxError') })
@@ -49,7 +49,6 @@ const OnboardingScreen: React.FC = () => {
 
   const {
     control,
-
     formState: { errors, isSubmitting },
     trigger,
     setValue,
@@ -79,7 +78,10 @@ const OnboardingScreen: React.FC = () => {
     setIsLoading(true);
     if (isChecked) {
       var response = await getCustomerCivilRecord(nationalIDNumber);
-      console.log(response);
+      setSubmittedData(({
+        ...submittedData,
+        fullNameArabic: response.fullNameArabic,
+      }));
       // based on response restrict progressing further
       setCurrentStep({ step: 1, title: "/terms", completed: true });
       handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);

@@ -20,10 +20,10 @@ import { useAuth } from "../contexts/AuthProvider";
 import { useNavigation } from "../contexts/NavigationProvider";
 import { handleNext } from "../utility/navigationUtils";
 import { countryCodes } from "../data/data";
-import { sendOTP } from "../axios";
 import Spinner from "../ui/Spinner";
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import { lazy } from "react";
+import { sendOTP } from "../axios";
 
 const RequestErrors = lazy(() => import("../ui/RequestErrors"));
 const NavigationBtns = lazy(() => import("../ui/NavigationBtns"));
@@ -82,33 +82,33 @@ const EmailVerification: React.FC = () => {
       setEmail(data.email);
       setPhoneNumber(data.phoneNumber);
       setCountryCode(data.countryCode);
-      // try {
-      //   const response = await sendOTP(
-      //     data.email.trim(),
-      //     data.countryCode.slice(1) + data.phoneNumber,
-      //     new Date(),
-      //     language
-      //   );
-      //   if (response.responseCode === 0) {
-          // setReqId(response.reqId);
+      try {
+        const responseCode = await sendOTP(
+          data.email.trim(),
+          data.countryCode.slice(1) + data.phoneNumber,
+          language
+        );
+        if (responseCode === 200) {
           setCurrentStep({ step: 3, title: "/email-verifcation", completed: true });
           handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
-      //   } else {
-      //     setError(
-      //       response.responseMessage
-      //     );
-      //     setOpen(true);
-      //   }
-      // } catch (error) {
-      //   if (error) {
-      //     setError(
-      //       i18n.language === "en"
-      //         ? "An error occurred while sending OTP. Please try again."
-      //         : "حدث خطأ اثناء ارسال OTP. الرجاء المحاولة مرة اخرى."
-      //     );
-      //     setOpen(true);
-      //   }
-      // }
+        } else {
+          setError(
+            i18n.language === "en"
+              ? "An error occurred while sending OTP. Please try again."
+              : "حدث خطأ اثناء ارسال OTP. الرجاء المحاولة مرة اخرى."
+          );
+          setOpen(true);
+        }
+      } catch (error) {
+        if (error) {
+          setError(
+            i18n.language === "en"
+              ? "An error occurred while sending OTP. Please try again."
+              : "حدث خطأ اثناء ارسال OTP. الرجاء المحاولة مرة اخرى."
+          );
+          setOpen(true);
+        }
+      }
     },
     [
       setEmail,

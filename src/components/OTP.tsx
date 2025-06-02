@@ -64,44 +64,50 @@ const OTP: React.FC = () => {
       setResend(true);
       return;
     }
-    // setResend(false);
-    // const otpValue = data.otp.join("");
-    // try {
-    //   const response = await verifyOTP(
-    //     email,
-    //     mobileNumber,
-    //     new Date(),
-    //     reqId,
-    //     otpValue
-    //   );
-    //   if (response.responseCode === 0) {
+    setResend(false);
+    const otpValue = data.otp.join("");
+    try {
+      const responseCode = await verifyOTP(
+        email,
+        mobileNumber,
+        otpValue
+      );
+      if (responseCode === 200) {
         setCurrentStep({ step: 4, title: "/otp", completed: true });
         setError("");
         handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
         setReqId(undefined);
         setTries(0);
         setResend(false);
-    //   } else {
-    //     setTries((prev) => prev + 1);
-    //     setError(
-    //       i18n.language === "en"
-    //         ? "The code is not correct or has timed out"
-    //         : "الرمز غير صحيح او انتهت المدة"
-    //     );
-    //     setOpen(true);
-    //     setValue("otp", ["", "", "", "", "", ""], { shouldValidate: true });
-    //   }
-    // } catch (error) {
-    //   if (error) {
-    //     setTries((prev) => prev + 1);
-    //     setError(
-    //       i18n.language === "en"
-    //         ? "The code is not correct or has timed out"
-    //         : "الرمز غير صحيح او انتهت المدة"
-    //     );
-    //     setOpen(true);
-    //   }
-    // }
+      } else if (responseCode === 404) {
+        setTries((prev) => prev + 1);
+        setError(
+          i18n.language === "en"
+            ? "The code is not correct."
+            : "الرمز غير صحيح او انتهت المدة"
+        );
+        setOpen(true);
+        setValue("otp", ["", "", "", "", "", ""], { shouldValidate: true });
+      } else {
+        setError(
+          i18n.language === "en"
+            ? "An unexpected error occurred. Please try again."
+            : "حدث خطأ غير متوقع الرجاء المحاولة مرة اخرى"
+        );
+        setOpen(true);
+        setResend(true);
+      }
+    } catch (error) {
+      if (error) {
+        setTries((prev) => prev + 1);
+        setError(
+          i18n.language === "en"
+            ? "The code is not correct or has timed out"
+            : "الرمز غير صحيح او انتهت المدة"
+        );
+        setOpen(true);
+      }
+    }
   };
 
   const handleChange = (index: number, value: string) => {
@@ -132,9 +138,8 @@ const OTP: React.FC = () => {
     setTries(0);
     setLoading(true);
     try {
-      const response = await sendOTP(email, mobileNumber, new Date(), language);
-      if (response.responseCode === 0) {
-        setReqId(response.reqId);
+      const responseCode = await sendOTP(email, mobileNumber, language);
+      if (responseCode === 200) {
         setError("");
         setTries(0);
         setResend(false);

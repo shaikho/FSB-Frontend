@@ -91,22 +91,16 @@ interface OpenCIF {
 export const sendOTP = async (
   email: string | undefined,
   mobileNumber: string,
-  datetime: Date,
   language: string
-): Promise<SendOTPResponse> => {
+) => {
   const BASE_URL = await getBaseUrl();
-  const url = `${BASE_URL}/SendOtp`;
+  const url = `${BASE_URL}/otp/send`;
   try {
     const response = await axios.post(
       url,
       { email, mobileNumber }
     );
-    const sendOTPResponse: SendOTPResponse = {
-      responseCode: response.data.responseCode,
-      reqId: response.data.reqId,
-      responseMessage: response.data.responseMessage,
-    };
-    return sendOTPResponse;
+    return response.status;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       return { responseCode: -1, responseMessage: error.message, reqId: "" };
@@ -118,22 +112,16 @@ export const sendOTP = async (
 export const verifyOTP = async (
   email: string | undefined,
   mobileNumber: string,
-  datetime: Date,
-  ReqId: string | undefined,
   otp: string
-): Promise<VerifyOTPResponseA> => {
+) => {
   const BASE_URL = await getBaseUrl();
-  const url = `${BASE_URL}/verifyOTP`;
+  const url = `${BASE_URL}/otp/verify`;
   try {
     const response = await axios.post(
       url,
       { email, mobileNumber, otp }
     );
-    const verifyOTPResponse: VerifyOTPResponseA = {
-      responseCode: response.data.responseCode,
-      responseMessage: response.data.responseMessage
-    };
-    return verifyOTPResponse;
+    return response.status;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       return { responseCode: -1, responseMessage: error.message };
@@ -192,7 +180,7 @@ export const openCIF = async (
   data: any
 ): Promise<{ done: boolean; message: string }> => {
   const BASE_URL = await getBaseUrl();
-  const url = `${BASE_URL}/openAccount`;
+  const url = `${BASE_URL}/OpenCIFData`;
   try {
     const response = await axios.post(url, data, {});
     console.log(response);
@@ -219,10 +207,8 @@ export const getCustomerCivilRecord = async (NID: string): Promise<{
 
   try {
     const response = await axios.post(url, { NID });
-    console.log(response);
-    if (response.data.result.responseCode === 200) {
-      const data = response.data.result;
-
+    if (response.data) {
+      const data = response.data;
       // Constructing full names from the civil register response
       const fullNameArabic = `${data.NAME} ${data.FATHER_NAME} ${data.GRAND_FATHER_NAME} ${data.GRE_GRA_FATHER_NAME}`.trim();
       const fullNameEnglish = `${data.LAST_NAME} ${data.FIRST_NAMES}`.trim();
