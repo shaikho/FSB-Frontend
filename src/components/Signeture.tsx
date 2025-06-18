@@ -22,11 +22,11 @@ const ImgPreview = styled("img")({
 
 // Define the component
 const Signeture: React.FC = () => {
-  const [error, setError] = useState("");
+  const [error, setPageError] = useState("");
   const { setSigneture } = useAuth();
   const { t, i18n } = useTranslation();
   const [img, setImg] = useState("");
-  const { setCurrentStep, currentStep, setDone } = useNavigation();
+  const { setCurrentStep, currentStep, setError, setDone } = useNavigation();
   const navigate = useNavigate();
   const contextValue = useAuth();
 
@@ -96,13 +96,13 @@ const Signeture: React.FC = () => {
         UsTaxPayer: contextValue.submittedData.UsTaxPayer,
         UsAccount: contextValue.submittedData.UsAccount,
       };
-      console.log(data);
       const { done, message } = await openCIF(data);
+      console.log("Response from openCIF:", done, message);
       setDone(done);
       setError(message);
       setCurrentStep({ step: 9, title: "/signeture", completed: true });
       handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
-    } else setError(t("signatureError"));
+    } else setPageError(t("signatureError"));
   }
 
   usePreventBackNavigation();

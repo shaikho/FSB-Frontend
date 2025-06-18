@@ -83,7 +83,8 @@ export default function Done() {
       UsCitizen: undefined,
       UsTaxPayer: undefined,
       UsAccount: undefined,
-      UsResident: undefined
+      UsResident: undefined, 
+      branch: ""
     });
   };
   useEffect(() => {
@@ -131,7 +132,7 @@ export default function Done() {
       </Grid>
       <Grid item>
         <Typography variant="h2" color="#fff" textAlign="center">
-          {done ? t("completedDesc") : error}
+          {error}
         </Typography>
       </Grid>
       <Grid item>

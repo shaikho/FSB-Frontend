@@ -133,6 +133,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     UsResident: undefined,
     UsTaxPayer: undefined,
     UsAccount: undefined,
+    branch: ""
   });
 
   const contextValue: AuthContextProps = {
