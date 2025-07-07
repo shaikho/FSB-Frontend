@@ -39,6 +39,7 @@ const EmailVerification: React.FC = () => {
     setCountryCode,
     phoneNumber,
     setReqId,
+    nationalIDNumber
   } = useAuth();
 
   const schema = z.object({
@@ -86,6 +87,7 @@ const EmailVerification: React.FC = () => {
         const responseCode = await sendOTP(
           data.email.trim(),
           data.countryCode.slice(1) + data.phoneNumber,
+          nationalIDNumber,
           language
         );
         if (responseCode === 200) {

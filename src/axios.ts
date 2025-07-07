@@ -90,7 +90,8 @@ interface OpenCIF {
 
 export const sendOTP = async (
   email: string | undefined,
-  mobileNumber: string,
+  phone: string,
+  nationalId: string,
   language: string
 ) => {
   const BASE_URL = await getBaseUrl();
@@ -98,7 +99,11 @@ export const sendOTP = async (
   try {
     const response = await axios.post(
       url,
-      { email, mobileNumber }
+      {
+        email,
+        phone,
+        nationalId
+      }
     );
     return response.status;
   } catch (error) {
