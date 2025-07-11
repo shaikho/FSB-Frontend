@@ -29,7 +29,7 @@ export default function PersonalInfo2({
   const { t, i18n } = useTranslation();
   const { setSubmittedData, submittedData } = useAuth();
   const { setCurrentStep, currentStep, steps, } = useNavigation();
-  const [selectedMaritalStatus, setSelectedMaritalStatus] = React.useState("");
+  const [selectedMaritalStatus, setSelectedMaritalStatus] = React.useState(submittedData.maritalStatus || "");
   const navigate = useNavigate();
   const maritalStatus = [
     { id: 1, title: t('single'), value: "Single" },
@@ -82,7 +82,13 @@ export default function PersonalInfo2({
     averageIncome: z.string().regex(/^\d*\.?\d*$/, {
       message: i18n.language === "en" ? "Invalid format." : "صيغة غير صالحة.",
     }),
-    MotherName: z.string().optional(),
+    MotherName: z.string().refine((val) => {
+      if (!val) return true; // Optional field
+      const words = val.trim().split(/\s+/);
+      return words.length === 4 && words.every(word => word.length > 0);
+    }, {
+      message: i18n.language === "en" ? "Mother name must at least consist of four names" : "اسم الأم يجب أن يتكون من 4 أسامي.",
+    }),
     partnerName: z.string().refine((val) => {
       if (selectedMaritalStatus === "Married" && !val) {
         return false;
@@ -195,6 +201,11 @@ export default function PersonalInfo2({
           sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
           tabIndex={1}
           onKeyDown={(e) => handleKeyDown(e, maritialStatusRef)}
+          error={errors.MotherName?.message !== undefined}
+          helperText={errors.MotherName ? errors.MotherName.message : ""}
+          onBlur={async () => {
+            await trigger("MotherName");
+          }}
         />
         <FormControl fullWidth>
           <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
@@ -226,21 +237,25 @@ export default function PersonalInfo2({
             )}
           />
         </FormControl>
-        <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
-          {t('partnerName')}
-        </Typography>
-        <TextField
-          type="text"
-          id="partnerName"
-          {...register("partnerName")}
-          sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
-          tabIndex={3}
-          inputRef={partnerNameRef}
-        />
-        {errors.partnerName && (
-          <Typography variant="body2" color="error">
-            {errors.partnerName.message}
-          </Typography>
+        {selectedMaritalStatus !== "Single" && (
+          <>
+            <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
+              {t('partnerName')}
+            </Typography>
+            <TextField
+              type="text"
+              id="partnerName"
+              {...register("partnerName")}
+              sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
+              tabIndex={3}
+              inputRef={partnerNameRef}
+            />
+            {errors.partnerName && (
+              <Typography variant="body2" color="error">
+                {errors.partnerName.message}
+              </Typography>
+            )}
+          </>
         )}
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("occupation")}

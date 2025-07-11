@@ -38,6 +38,10 @@ export default function ProgressBar() {
     progress = 10;
   } else if (currentStep.title === "/personal-info" && personalInfoStep === 2) {
     progress = 15;
+  } else if (currentStep.title === "/display-personal-info") {
+    progress = 80;
+  } else if (currentStep.title === "/signeture") {
+    progress = 90;
   }
 
   return (
