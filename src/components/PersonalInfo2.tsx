@@ -28,6 +28,15 @@ export default function PersonalInfo2({
 }: TPersonalInfo2Props) {
   const { t, i18n } = useTranslation();
   const { setSubmittedData, submittedData } = useAuth();
+  // Prevent numbers in MotherName and partnerName
+  const handleNameChange = (field: "MotherName" | "partnerName") => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/\d/.test(value)) {
+      // If input contains a digit, discard the change
+      return;
+    }
+    setValue(field, value, { shouldValidate: true });
+  };
   const { setCurrentStep, currentStep, steps, } = useNavigation();
   const [selectedMaritalStatus, setSelectedMaritalStatus] = React.useState(submittedData.maritalStatus || "");
   const navigate = useNavigate();
@@ -84,18 +93,22 @@ export default function PersonalInfo2({
     }),
     MotherName: z.string().refine((val) => {
       if (!val) return true; // Optional field
+      if (/\d/.test(val)) return false; // No numbers allowed
       const words = val.trim().split(/\s+/);
       return words.length === 4 && words.every(word => word.length > 0);
     }, {
-      message: i18n.language === "en" ? "Mother name must at least consist of four names" : "اسم الأم يجب أن يتكون من 4 أسامي.",
+      message: i18n.language === "en" ? "Mother name must at least consist of four names and does not allow numbers." : "اسم الأم يجب أن يتكون من 4 أسماء ولا يحتوي على أرقام.",
     }),
     partnerName: z.string().refine((val) => {
-      if (selectedMaritalStatus === "Married" && !val) {
-        return false;
-      }
-      return true;
+      if (selectedMaritalStatus !== "Married") return true;
+      if (!val) return false;
+      if (/\d/.test(val)) return false; // No numbers allowed
+      const words = val.trim().split(/\s+/);
+      return words.length === 4 && words.every(word => word.length > 0);
     }, {
-      message: t('partnerNameErrorMessage')
+      message: i18n.language === "en"
+        ? "Partner name must consist of four names and does not allow numbers."
+        : "اسم الزوج يجب أن يتكون من 4 أسماء ولا يحتوي على أرقام.",
     }),
     maritalStatus: z.string().min(1, {
       message: t('maritalStatusErrorMessage')
@@ -206,6 +219,7 @@ export default function PersonalInfo2({
           onBlur={async () => {
             await trigger("MotherName");
           }}
+          onChange={handleNameChange("MotherName")}
         />
         <FormControl fullWidth>
           <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
@@ -249,6 +263,7 @@ export default function PersonalInfo2({
               sx={{ borderRadius: "10px", margin: 0, fontSize: "12px" }}
               tabIndex={3}
               inputRef={partnerNameRef}
+              onChange={handleNameChange("partnerName")}
             />
             {errors.partnerName && (
               <Typography variant="body2" color="error">
@@ -357,20 +372,9 @@ export default function PersonalInfo2({
             </Select>
           )}
         />
+        <br />
         <NavigationBtns isSubmitting={isSubmitting} />
       </form>
-      <br />
-      <Typography>
-        {Object.keys(errors).length > 0 && (
-          <div>
-            {Object.entries(errors).map(([key, error]) => (
-              <Typography key={key} variant="body2" color="error">
-                {error.message}
-              </Typography>
-            ))}
-          </div>
-        )}
-      </Typography>
     </>
   );
 }

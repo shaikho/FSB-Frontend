@@ -76,6 +76,17 @@ const OnboardingScreen: React.FC = () => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
+    
+    // Validate the nationalIDNumber before proceeding
+    const isNationalIDValid = await trigger("nationalIDNumber");
+    const currentNationalID = nationalIDNumber || "";
+    
+    // Check if nationalIDNumber is valid and not empty
+    if (!isNationalIDValid || currentNationalID.length !== 11 || !/^\d+$/.test(currentNationalID)) {
+      setIsLoading(false);
+      return;
+    }
+    
     if (isChecked) {
       var response = await getCustomerCivilRecord(nationalIDNumber);
       setSubmittedData(({
