@@ -209,8 +209,8 @@ export const getCustomerCivilRecord = async (NID: string): Promise<{
   responseCode: number;
   responseMessage: string;
 }> => {
-  const civilRegisterUrl = await getCivilRegisterUrl();
-  const url = `${civilRegisterUrl}/CRSAPI/Services/GetCRSData`;
+  const BASE_URL = await getBaseUrl();
+  const url = `${BASE_URL}/GetCRSData`;
 
   try {
     const response = await axios.post(url, { NID });

@@ -21,6 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "../contexts/AuthProvider";
 import { getCustomerCivilRecord } from "../axios";
+import RequestErrors from "../ui/RequestErrors";
 
 const OnboardingScreen: React.FC = () => {
   const [errorChoose, setErrorChoose] = useState("");
@@ -44,7 +45,8 @@ const OnboardingScreen: React.FC = () => {
       .regex(/^\d+$/, { message: t('nationalIDNumberMaxError') })
       .refine(value => !isNaN(Number(value)), { message: t('nationalIDNumberMaxError') })
   });
-
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string>("");
   type FormFields = z.infer<typeof schema>;
 
   const {
@@ -76,28 +78,35 @@ const OnboardingScreen: React.FC = () => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    
+
     // Validate the nationalIDNumber before proceeding
     const isNationalIDValid = await trigger("nationalIDNumber");
     const currentNationalID = nationalIDNumber || "";
-    
+
     // Check if nationalIDNumber is valid and not empty
     if (!isNationalIDValid || currentNationalID.length !== 11 || !/^\d+$/.test(currentNationalID)) {
       setIsLoading(false);
       return;
     }
-    
+
     if (isChecked) {
       var response = await getCustomerCivilRecord(nationalIDNumber);
-      setSubmittedData(({
-        ...submittedData,
-        fullNameArabic: response.fullNameArabic,
-      }));
-      // based on response restrict progressing further
-      setCurrentStep({ step: 1, title: "/terms", completed: true });
-      handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
-      setPersonalInfoStep(1);
-      setIsLoading(false);
+      console.log("Response from getCustomerCivilRecord:", response);
+      if (response.responseCode !== -1) {
+        setSubmittedData(({
+          ...submittedData,
+          fullNameArabic: response.fullNameArabic,
+        }));
+        // based on response restrict progressing further
+        setCurrentStep({ step: 1, title: "/terms", completed: true });
+        handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
+        setPersonalInfoStep(1);
+        setIsLoading(false);
+      } else {
+        setError(i18n.language === "en" ? "Invalid national number id please use a valid number to continue." : "الرقم الوطني غير صحيح، يرجى إدخال رقم صحيح للمتابعة.");
+        setOpen(true);
+        setIsLoading(false);
+      }
     } else {
       const error = t("ErrorAgreeTerm");
       setErrorChoose(error);
@@ -109,6 +118,14 @@ const OnboardingScreen: React.FC = () => {
   }, [setCurrentStep]);
   return (
     <MainLayout>
+      {error && (
+        <RequestErrors
+          errors={error}
+          setError={setError}
+          open={open}
+          close={() => setOpen(false)}
+        />
+      )}
       <Box
         component="div"
         sx={{
