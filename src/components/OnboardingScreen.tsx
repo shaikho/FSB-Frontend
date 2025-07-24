@@ -91,7 +91,6 @@ const OnboardingScreen: React.FC = () => {
 
     if (isChecked) {
       var response = await getCustomerCivilRecord(nationalIDNumber);
-      console.log("Response from getCustomerCivilRecord:", response);
       if (response.responseCode !== -1) {
         setSubmittedData(({
           ...submittedData,
