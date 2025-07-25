@@ -92,12 +92,12 @@ export default function PersonalInfo2({
       message: i18n.language === "en" ? "Invalid format." : "صيغة غير صالحة.",
     }),
     MotherName: z.string().refine((val) => {
-      if (!val) return true; // Optional field
+      if (!val) return false; // Required field
       if (/\d/.test(val)) return false; // No numbers allowed
       const words = val.trim().split(/\s+/);
       return words.length === 4 && words.every(word => word.length > 0);
     }, {
-      message: i18n.language === "en" ? "Mother name must at least consist of four names and does not allow numbers." : "اسم الأم يجب أن يتكون من 4 أسماء ولا يحتوي على أرقام.",
+      message: i18n.language === "en" ? "Mother name must consist of four names and does not allow numbers." : "اسم الأم يجب أن يتكون من 4 أسماء ولا يحتوي على أرقام.",
     }),
     partnerName: z.string().refine((val) => {
       if (selectedMaritalStatus !== "Married") return true;
