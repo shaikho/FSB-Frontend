@@ -244,3 +244,40 @@ export const getCustomerCivilRecord = async (NID: string): Promise<{
     };
   }
 };
+
+export const IsVerified = async (nationalNumber: string): Promise<boolean> => {
+  try {
+    const BASE_URL = await getBaseUrl();
+    const url = `${BASE_URL}/face-recognition/${nationalNumber}`;
+    const response = await axios.get(url);
+    return response.status === 200;
+  } catch (error) {
+    // Optionally log or handle the error
+    return false;
+  }
+};
+
+export const updateIsVerified = async (nationalNumber: string, isVerified: boolean) => {
+  const BASE_URL = await getBaseUrl();
+  const url = `${BASE_URL}/face-recognition`;
+  try {
+    const response = await axios.post(url, { nationalNumber, isVerified },);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating isVerified:", error);
+    throw error;
+  }
+};
+
+export const GetSessionIDWithUqudoImage = async (imageId: string): Promise<string> => {
+  const BASE_URL = await getBaseUrl();
+  const url = `${BASE_URL}/GetSessionIDWithUqudoImage/${imageId}`;
+  try {
+    const response = await axios.get(url);
+    const sessionId: string = response.data.sessionId;
+    return sessionId;
+  } catch (error) {
+    console.error("Error fetching image:", error);
+    throw error;
+  }
+};

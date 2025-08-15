@@ -34,21 +34,31 @@ const Signeture: React.FC = () => {
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setImg(URL.createObjectURL(file));
       const reader = new FileReader();
+      
       reader.onload = (e) => {
-        setSigneture(e.target?.result === undefined ? null : e.target.result);
+        const base64Result = e.target?.result;
+        if (base64Result) {
+          // Set the Base64 string for signature immediately
+          setSigneture(base64Result);
+          // Also set the image URL for preview
+          setImg(base64Result as string);
+          console.log("File converted to Base64:", base64Result);
+        } else {
+          console.error("Failed to convert file to Base64");
+          setSigneture(null);
+        }
       };
 
       reader.onerror = (e) => {
         console.error("FileReader error", e);
         setSigneture(null);
+        setImg("");
       };
 
+      // Read the file as Base64 data URL
       reader.readAsDataURL(file);
     }
-    console.log("File selected:", contextValue.signeture);
-    console.log("Image URL:", img);
   };
 
   const handleSubmit = async () => {
@@ -67,7 +77,7 @@ const Signeture: React.FC = () => {
         placeofBirth: contextValue.documentData.placeOfBirth,
         gender: contextValue.documentData.sex,
         IDNumber: contextValue.documentData.documentNumber,
-        nationalIDNumber: contextValue.documentData.identityNumber,
+        nationalIDNumber: contextValue.submittedData.identityNumber,
         placeofIssue: contextValue.documentData.placeOfIssue,
         dateofIssue: contextValue.documentData.issueDateFormatted,
         dateofexpiry: contextValue.documentData.dateOfExpiryFormatted,

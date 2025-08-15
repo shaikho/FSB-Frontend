@@ -88,9 +88,19 @@ export default function PersonalInfo2({
           ? "Employer is required."
           : "الجهة العاملة مطلوبة.",
     }),
-    averageIncome: z.string().regex(/^\d*\.?\d*$/, {
-      message: i18n.language === "en" ? "Invalid format." : "صيغة غير صالحة.",
-    }),
+    averageIncome: z
+      .string()
+      .regex(/^\d*\.?\d*$/, {
+        message: i18n.language === "en" ? "Invalid format." : "صيغة غير صالحة.",
+      })
+      .refine((val) => {
+        // Accept empty string (optional), or a number > 0
+        if (!val) return false;
+        const num = Number(val);
+        return !isNaN(num) && num > 0;
+      }, {
+        message: i18n.language === "en" ? "Income must be greater than 0." : "الدخل يجب أن يكون أكبر من 0.",
+      }),
     MotherName: z.string().refine((val) => {
       if (!val) return false; // Required field
       if (/\d/.test(val)) return false; // No numbers allowed

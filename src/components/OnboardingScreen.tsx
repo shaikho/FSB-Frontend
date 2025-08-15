@@ -20,7 +20,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "../contexts/AuthProvider";
-import { getCustomerCivilRecord } from "../axios";
+import { getCustomerCivilRecord, IsVerified } from "../axios";
 import RequestErrors from "../ui/RequestErrors";
 
 const OnboardingScreen: React.FC = () => {
@@ -90,25 +90,46 @@ const OnboardingScreen: React.FC = () => {
     }
 
     if (isChecked) {
-      var response = await getCustomerCivilRecord(nationalIDNumber);
-      if (response.responseCode !== -1) {
-        setSubmittedData(({
-          ...submittedData,
-          fullNameArabic: response.fullNameArabic,
-        }));
-        // based on response restrict progressing further
-        setCurrentStep({ step: 1, title: "/terms", completed: true });
-        handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
-        setPersonalInfoStep(1);
-        setIsLoading(false);
-      } else {
-        setError(i18n.language === "en" ? "Invalid national number id please use a valid number to continue." : "الرقم الوطني غير صحيح، يرجى إدخال رقم صحيح للمتابعة.");
+      try {
+        const response = await getCustomerCivilRecord(nationalIDNumber);
+        const isVerified = await IsVerified(nationalIDNumber);
+        console.log("IsVerified response:", isVerified);
+        if (!isVerified && response.responseCode !== -1) {
+          setSubmittedData({
+            ...submittedData,
+            fullNameArabic: response.fullNameArabic,
+          });
+          setCurrentStep({ step: 1, title: "/terms", completed: true });
+          handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
+          setPersonalInfoStep(1);
+        } else if (response.responseCode === -1) {
+          setError(
+            i18n.language === "en"
+              ? "Invalid national number id please use a valid number to continue."
+              : "الرقم الوطني غير صحيح، يرجى إدخال رقم صحيح للمتابعة."
+          );
+          setOpen(true);
+        }
+        else if (isVerified) {
+          setError(
+            i18n.language === "en"
+              ? "You already have an account."
+              : "لديك حساب بالفعل."
+          );
+          setOpen(true);
+        }
+      } catch (err) {
+        setError(
+          i18n.language === "en"
+            ? "Invalid national number id please use a valid number to continue."
+            : "الرقم الوطني غير صحيح، يرجى إدخال رقم صحيح للمتابعة."
+        );
         setOpen(true);
+      } finally {
         setIsLoading(false);
       }
     } else {
-      const error = t("ErrorAgreeTerm");
-      setErrorChoose(error);
+      setErrorChoose(t("ErrorAgreeTerm"));
       setIsLoading(false);
     }
   };
