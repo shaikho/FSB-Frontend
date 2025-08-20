@@ -35,7 +35,6 @@ const Signeture: React.FC = () => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      
       reader.onload = (e) => {
         const base64Result = e.target?.result;
         if (base64Result) {
@@ -105,6 +104,8 @@ const Signeture: React.FC = () => {
         UsResident: contextValue.submittedData.UsResident,
         UsTaxPayer: contextValue.submittedData.UsTaxPayer,
         UsAccount: contextValue.submittedData.UsAccount,
+        documentPhotoId: contextValue.documentData.documentPhotoId,
+        personalPhotoId: contextValue.documentData.personalPhotoId
       };
       const { done, message } = await openCIF(data);
       console.log("Response from openCIF:", done, message);

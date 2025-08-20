@@ -43,6 +43,10 @@ interface AuthContextProps {
   setUsTaxPayer: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   UsAccount: boolean | undefined;
   setUsAccount: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  documentPhotoId: string | undefined;
+  setDocumentPhotoId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  personalPhotoId: string | undefined;
+  setPersonalPhotoId: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 // Create the context with an initial value
@@ -94,6 +98,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     address: "",
     nationalIDNumber: "",
   });
+  const [documentPhotoId, setDocumentPhotoId] = useState<string | undefined>(undefined);
+  const [personalPhotoId, setPersonalPhotoId] = useState<string | undefined>(undefined);
   const code = countryCode?.substring(1, countryCode.length);
   let phone = phoneNumber === undefined ? "" : phoneNumber;
   phone = phone[0] === "0" ? phone?.substring(1, phone.length) : phone;
@@ -133,7 +139,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     UsResident: undefined,
     UsTaxPayer: undefined,
     UsAccount: undefined,
-    branch: ""
+    branch: "",
   });
 
   const contextValue: AuthContextProps = {
@@ -176,6 +182,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUsTaxPayer,
     UsAccount,
     setUsAccount,
+    documentPhotoId,
+    setDocumentPhotoId,
+    personalPhotoId,
+    setPersonalPhotoId,
   };
 
   return (

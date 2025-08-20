@@ -35,6 +35,8 @@ type OnboardingParams = {
   setPersonalInfoStep: React.Dispatch<React.SetStateAction<number>>;
   values: TConfig;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setPersonalPhotoId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setDocumentPhotoId: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
 export async function onboardingJourney({
@@ -50,6 +52,8 @@ export async function onboardingJourney({
   setPersonalInfoStep,
   setLoading,
   values,
+  setPersonalPhotoId,
+  setDocumentPhotoId
 }: OnboardingParams) {
   const {
     idPhotoTamperingDetection,
@@ -130,6 +134,9 @@ export async function onboardingJourney({
           } else {
             const scanData = data.documents[0].scan;
             const photoImg = data.documents[0].scan.faceImageId;
+            const frontImg = data.documents[0].scan.frontImageId;
+            setPersonalPhotoId(photoImg);
+            setDocumentPhotoId(frontImg);
             setPhoto(photoImg);
             setDocumentData({
               fullName:
@@ -148,6 +155,8 @@ export async function onboardingJourney({
               reading: data.documents[0].reading,
               face: data.documents[0].face,
               lookup: data.documents[0].lookup,
+              documentPhotoId: frontImg,
+              personalPhotoId: photoImg,
             });
             setOpen(false);
             setError("");

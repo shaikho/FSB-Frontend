@@ -54,7 +54,7 @@ export default function Scan() {
 
     fetchConfig();
   }, [i18n.language, setError]);
-  const { setDocumentData, document: documentAuth, setPhoto } = useAuth();
+  const { setDocumentData, document: documentAuth, setPhoto, setPersonalPhotoId, setDocumentPhotoId } = useAuth();
   const { setCurrentStep, steps, currentStep, setPersonalInfoStep } =
     useNavigation();
 
@@ -78,6 +78,8 @@ export default function Scan() {
         setPersonalInfoStep,
         values,
         setLoading,
+        setPersonalPhotoId,
+        setDocumentPhotoId
       });
       setLoading(false);
     } catch (err) {

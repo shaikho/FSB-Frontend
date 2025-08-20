@@ -43,6 +43,8 @@ export type TDocumentData = {
   placeOfIssue: string;
   address?: string;
   nationalIDNumber?: string;
+  documentPhotoId?: string;
+  personalPhotoId?: string;
 };
 
 export type TSubmittedData = {
