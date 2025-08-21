@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import signatureImg from "../assets/images/signatureImg.png";
 import usePreventBackNavigation from "../hooks/usePreventBackNavigation";
 import { openCIF } from "../axios";
+import Spinner from "../ui/Spinner";
 
 // Styling for the image preview
 const ImgPreview = styled("img")({
@@ -23,6 +24,7 @@ const ImgPreview = styled("img")({
 // Define the component
 const Signeture: React.FC = () => {
   const [error, setPageError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { setSigneture } = useAuth();
   const { t, i18n } = useTranslation();
   const [img, setImg] = useState("");
@@ -62,57 +64,65 @@ const Signeture: React.FC = () => {
 
   const handleSubmit = async () => {
     if (img !== "") {
-      // after successful upload, submit data to backend
-      // submit data to the server
-      const data = {
-        documentData: contextValue.documentData,
-        email: contextValue.email,
-        currency: contextValue.currency,
-        residency: contextValue.residency,
-        mobileNumber: contextValue.mobileNumber,
-        fullNameEnglish: contextValue.documentData.fullName,
-        fullNameArabic: contextValue.documentData.fullNameArabic,
-        dateofBirth: contextValue.documentData.dateOfBirthFormatted,
-        placeofBirth: contextValue.documentData.placeOfBirth,
-        gender: contextValue.documentData.sex,
-        IDNumber: contextValue.documentData.documentNumber,
-        nationalIDNumber: contextValue.submittedData.identityNumber,
-        placeofIssue: contextValue.documentData.placeOfIssue,
-        dateofIssue: contextValue.documentData.issueDateFormatted,
-        dateofexpiry: contextValue.documentData.dateOfExpiryFormatted,
-        AcountryCode: contextValue.submittedData.AcountryCode,
-        AphoneNumber: contextValue.submittedData.AphoneNumber,
-        address: contextValue.submittedData.address,
-        occupation: contextValue.submittedData.occupation,
-        employer: contextValue.submittedData.employer,
-        averageIncome: contextValue.submittedData.averageIncome,
-        PresidentFamilyMember: contextValue.submittedData.PresidentFamilyMember,
-        MinisterPolitician: contextValue.submittedData.MinisterPolitician,
-        MemberofParliament: contextValue.submittedData.MemberofParliament,
-        MilitaryHighRank: contextValue.submittedData.MilitaryHighRank,
-        SeniorOfficial: contextValue.submittedData.SeniorOfficial,
-        ForeignDiplomatic: contextValue.submittedData.ForeignDiplomatic,
-        SubjecttoUSAtaxpayer: contextValue.submittedData.SubjecttoUSAtaxpayer,
-        MotherName: contextValue.submittedData.MotherName,
-        identityNumber: contextValue.submittedData.identityNumber,
-        signature: contextValue.signeture,
-        document: contextValue.document,
-        photo: contextValue.photo,
-        language: i18n.language.toUpperCase(),
-        WorkedInGoverment: contextValue.submittedData.WorkedInGoverment,
-        UsCitizen: contextValue.submittedData.UsCitizen,
-        UsResident: contextValue.submittedData.UsResident,
-        UsTaxPayer: contextValue.submittedData.UsTaxPayer,
-        UsAccount: contextValue.submittedData.UsAccount,
-        documentPhotoId: contextValue.documentData.documentPhotoId,
-        personalPhotoId: contextValue.documentData.personalPhotoId
-      };
-      const { done, message } = await openCIF(data);
-      console.log("Response from openCIF:", done, message);
-      setDone(done);
-      setError(message);
-      setCurrentStep({ step: 9, title: "/signeture", completed: true });
-      handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
+      setIsLoading(true);
+      try {
+        // after successful upload, submit data to backend
+        // submit data to the server
+        const data = {
+          documentData: contextValue.documentData,
+          email: contextValue.email,
+          currency: contextValue.currency,
+          residency: contextValue.residency,
+          mobileNumber: contextValue.mobileNumber,
+          fullNameEnglish: contextValue.documentData.fullName,
+          fullNameArabic: contextValue.documentData.fullNameArabic,
+          dateofBirth: contextValue.documentData.dateOfBirthFormatted,
+          placeofBirth: contextValue.documentData.placeOfBirth,
+          gender: contextValue.documentData.sex,
+          IDNumber: contextValue.documentData.documentNumber,
+          nationalIDNumber: contextValue.submittedData.identityNumber,
+          placeofIssue: contextValue.documentData.placeOfIssue,
+          dateofIssue: contextValue.documentData.issueDateFormatted,
+          dateofexpiry: contextValue.documentData.dateOfExpiryFormatted,
+          AcountryCode: contextValue.submittedData.AcountryCode,
+          AphoneNumber: contextValue.submittedData.AphoneNumber,
+          address: contextValue.submittedData.address,
+          occupation: contextValue.submittedData.occupation,
+          employer: contextValue.submittedData.employer,
+          averageIncome: contextValue.submittedData.averageIncome,
+          PresidentFamilyMember: contextValue.submittedData.PresidentFamilyMember,
+          MinisterPolitician: contextValue.submittedData.MinisterPolitician,
+          MemberofParliament: contextValue.submittedData.MemberofParliament,
+          MilitaryHighRank: contextValue.submittedData.MilitaryHighRank,
+          SeniorOfficial: contextValue.submittedData.SeniorOfficial,
+          ForeignDiplomatic: contextValue.submittedData.ForeignDiplomatic,
+          SubjecttoUSAtaxpayer: contextValue.submittedData.SubjecttoUSAtaxpayer,
+          MotherName: contextValue.submittedData.MotherName,
+          identityNumber: contextValue.submittedData.identityNumber,
+          signature: contextValue.signeture,
+          document: contextValue.document,
+          photo: contextValue.photo,
+          language: i18n.language.toUpperCase(),
+          WorkedInGoverment: contextValue.submittedData.WorkedInGoverment,
+          UsCitizen: contextValue.submittedData.UsCitizen,
+          UsResident: contextValue.submittedData.UsResident,
+          UsTaxPayer: contextValue.submittedData.UsTaxPayer,
+          UsAccount: contextValue.submittedData.UsAccount,
+          documentPhotoId: contextValue.documentData.documentPhotoId,
+          personalPhotoId: contextValue.documentData.personalPhotoId
+        };
+        const { done, message } = await openCIF(data);
+        console.log("Response from openCIF:", done, message);
+        setDone(done);
+        setError(message);
+        setCurrentStep({ step: 9, title: "/signeture", completed: true });
+        handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
+      } catch (error) {
+        console.error("Error submitting data:", error);
+        setPageError(t("submitError") || "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
     } else setPageError(t("signatureError"));
   }
 
@@ -122,6 +132,7 @@ const Signeture: React.FC = () => {
   }, [setCurrentStep]);
   return (
     <MainLayout>
+      {isLoading ? <Spinner /> : null}
       <Box
         component="div"
         sx={{
@@ -212,7 +223,7 @@ const Signeture: React.FC = () => {
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={img === "" || !contextValue.signeture}
+            disabled={img === "" || !contextValue.signeture || isLoading}
           >
             {t("next")}
             <ArrowForwardIos />
