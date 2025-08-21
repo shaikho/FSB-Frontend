@@ -83,7 +83,7 @@ export default function Done() {
       UsCitizen: undefined,
       UsTaxPayer: undefined,
       UsAccount: undefined,
-      UsResident: undefined, 
+      UsResident: undefined,
       branch: ""
     });
   };

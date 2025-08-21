@@ -109,10 +109,10 @@ const Signeture: React.FC = () => {
           UsTaxPayer: contextValue.submittedData.UsTaxPayer,
           UsAccount: contextValue.submittedData.UsAccount,
           documentPhotoId: contextValue.documentData.documentPhotoId,
-          personalPhotoId: contextValue.documentData.personalPhotoId
+          personalPhotoId: contextValue.documentData.personalPhotoId,
+          branchCode: contextValue.submittedData.branch
         };
         const { done, message } = await openCIF(data);
-        console.log("Response from openCIF:", done, message);
         setDone(done);
         setError(message);
         setCurrentStep({ step: 9, title: "/signeture", completed: true });
