@@ -10,7 +10,7 @@ export default function Spinner() {
         placeItems: "center",
         minHeight: "100%",
         width: "100%",
-        zIndex: 1000,
+        zIndex: 1,
       }}
     >
       <CircularProgress color="primary" />

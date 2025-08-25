@@ -38,8 +38,7 @@
     "stylis": "^4.3.2",
     "stylis-plugin-rtl": "^2.1.1",
     "typescript": "^5.5.3",
-    "uqudosdk-preview-web": "^4.0.1",
-    "uqudosdk-web": "^3.6.1",
+    "uqudosdk-web": "4.0.2",
     "web-vitals": "^2.1.4",
     "zod": "^3.23.8"
   },

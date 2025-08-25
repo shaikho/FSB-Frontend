@@ -43,6 +43,14 @@ interface AuthContextProps {
   setUsTaxPayer: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   UsAccount: boolean | undefined;
   setUsAccount: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  uqudoToken: string; // <-- Added property
+  setUqudoToken: React.Dispatch<React.SetStateAction<string>>; // <-- Added setter
+  livenessCheckSessionId: string;
+  setLivenessCheckSessionId: React.Dispatch<React.SetStateAction<string>>;
+  showNationalNumberForm: boolean;
+  setShowNationalNumberForm: React.Dispatch<React.SetStateAction<boolean>>;
+  livenessCheck: boolean;
+  setLivenessCheck: React.Dispatch<React.SetStateAction<boolean>>;
   documentPhotoId: string | undefined;
   setDocumentPhotoId: React.Dispatch<React.SetStateAction<string | undefined>>;
   personalPhotoId: string | undefined;
@@ -83,6 +91,9 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [UsResident, setUsResident] = useState<boolean | undefined>(undefined);
   const [UsTaxPayer, setUsTaxPayer] = useState<boolean | undefined>(undefined);
   const [UsAccount, setUsAccount] = useState<boolean | undefined>(undefined);
+  const [livenessCheckSessionId, setLivenessCheckSessionId] = useState<string>("");
+  const [showNationalNumberForm, setShowNationalNumberForm] = useState(false);
+  const [livenessCheck, setLivenessCheck] = useState<boolean>(false);
   const [documentData, setDocumentData] = useState<TDocumentData>({
     fullName: "",
     fullNameArabic: "",
@@ -105,6 +116,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   phone = phone[0] === "0" ? phone?.substring(1, phone.length) : phone;
   const [photo, setPhoto] = useState<string>("");
   const mobileNumber = `${code ?? ""}${phone ?? ""}`;
+  const [uqudoToken, setUqudoToken] = useState<string>("");
   const [submittedData, setSubmittedData] = useState<TSubmittedData>({
     fullNameEnglish: "",
     fullNameArabic: "",
@@ -139,7 +151,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     UsResident: undefined,
     UsTaxPayer: undefined,
     UsAccount: undefined,
-    branch: "",
+    branch: "" // <-- Added missing required property
   });
 
   const contextValue: AuthContextProps = {
@@ -182,6 +194,14 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUsTaxPayer,
     UsAccount,
     setUsAccount,
+    uqudoToken, // <-- Added property
+    setUqudoToken, // <-- Added setter
+    livenessCheckSessionId,
+    setLivenessCheckSessionId,
+    showNationalNumberForm,
+    setShowNationalNumberForm,
+    livenessCheck,
+    setLivenessCheck,
     documentPhotoId,
     setDocumentPhotoId,
     personalPhotoId,

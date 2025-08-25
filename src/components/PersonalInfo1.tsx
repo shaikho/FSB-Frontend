@@ -9,22 +9,28 @@ import NavigationBtns from "../ui/NavigationBtns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Spinner from "../ui/Spinner";
 import { useNavigation } from "../contexts/NavigationProvider";
+import { IsVerified, updateIsVerified } from "../axios";
+import { handleBack, handleNext } from "../utility/navigationUtils";
 import { useNavigate } from "react-router-dom";
-import { handleNext } from "../utility/navigationUtils";
 
 type TPersonalInfo1Props = {
   setPersonalInfoStep: React.Dispatch<React.SetStateAction<number>>;
 };
 
-export default function PersonalInfo1({ setPersonalInfoStep }: TPersonalInfo1Props) {
-  const { documentData, submittedData, setSubmittedData } = useAuth();
+export default function PersonalInfo1({
+  setPersonalInfoStep,
+}: TPersonalInfo1Props) {
+  const { document, setLivenessCheck, livenessCheckSessionId, documentData, submittedData, setSubmittedData, uqudoToken, setShowNationalNumberForm } = useAuth();
   const {
+    setDone,
     setCurrentStep,
+    steps,
     currentStep,
-    steps
-  } = useNavigation(); const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
+    setError,
+  } = useNavigation();
+  const { t, i18n } = useTranslation();
   const contextValue = useAuth();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const schema = z.object({
     fullNameEnglish: z.string(),
@@ -110,8 +116,6 @@ export default function PersonalInfo1({ setPersonalInfoStep }: TPersonalInfo1Pro
   });
 
   const submitFunction = async (formdata: FormFields) => {
-    console.log("Form submitted with data:", formdata);
-    setIsLoading(true);
     setSubmittedData({
       ...submittedData,
       fullNameArabic: formdata.fullNameArabic,
@@ -125,8 +129,58 @@ export default function PersonalInfo1({ setPersonalInfoStep }: TPersonalInfo1Pro
       dateofIssue: formdata.dateofIssue,
       dateofexpiry: formdata.dateofexpiry,
     });
-    setCurrentStep({ step: 8, title: "/display-personal-info", completed: true });
-    handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
+    const nationalIDNumber = documentData.identityNumber.replace(/-/g, "");
+    const isVerified = await IsVerified(nationalIDNumber);
+    setIsLoading(false);
+    if (!isVerified) {
+      await updateIsVerified(nationalIDNumber, true);
+      const { LivenessCheckJourney } = await import("./LivenessCheckJourney");
+      const isNationalIDCheck = false;
+      // TODO: call liveness check session id
+      const sessionId = livenessCheckSessionId;
+      const wasSuccessful = await LivenessCheckJourney({
+        setError,
+        navigate,
+        i18n,
+        setLoading: () => { },
+        setOpen: () => { },
+        sessionId,
+        setShowNationalNumberForm,
+        setLivenessCheck,
+        isNationalIDCheck,
+        documentData
+      });
+      if (wasSuccessful) {
+        setCurrentStep({ step: 8, title: "/display-personal-info", completed: true });
+        handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
+      } else {
+        // national number id error message
+        if (document === 4) {
+          setError(
+            i18n.language === "en"
+              ? "Your request for opening an account has been received already and being processed, you will be notified using the registered Email and phone number."
+              : "تم استلام طلبك لفتح الحساب وجارٍ معالجته. سيتم إشعارك عبر البريد الإلكتروني ورقم الهاتف المسجلين."
+          );
+        } else {
+          // passport error message
+          setError(
+            i18n.language === "en"
+              ? "Already you have Fib account"
+              : "لديك حساب بالفعل."
+          );
+        }
+        setCurrentStep({ step: 1, title: "/", completed: false });
+        handleBack(setCurrentStep, currentStep.step, steps, navigate)
+      }
+    } else { // user already has an account
+      setError(
+        i18n.language === "en"
+          ? "Already you have Fib account"
+          : "لديك حساب بالفعل."
+      );
+      setCurrentStep({ step: 1, title: "/", completed: false });
+      handleNext(setCurrentStep, 0, steps, navigate)
+    }
   };
   useEffect(() => {
     setCurrentStep({ step: 8, title: "/display-personal-info", completed: false });

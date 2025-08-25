@@ -35,7 +35,8 @@ const OnboardingScreen: React.FC = () => {
     setCurrentStep,
     steps,
     currentStep,
-    setPersonalInfoStep
+    setPersonalInfoStep,
+    error: livenessCheckError
   } = useNavigation();
   const { nationalIDNumber, setNationalIDNumber, submittedData, setSubmittedData } = useAuth();
   const schema = z.object({
@@ -45,7 +46,7 @@ const OnboardingScreen: React.FC = () => {
       .regex(/^\d+$/, { message: t('nationalIDNumberMaxError') })
       .refine(value => !isNaN(Number(value)), { message: t('nationalIDNumberMaxError') })
   });
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(livenessCheckError ? true : false);
   const [error, setError] = useState<string>("");
   type FormFields = z.infer<typeof schema>;
 
@@ -138,9 +139,9 @@ const OnboardingScreen: React.FC = () => {
   }, [setCurrentStep]);
   return (
     <MainLayout>
-      {error && (
+      {error || livenessCheckError && (
         <RequestErrors
-          errors={error}
+          errors={error || livenessCheckError}
           setError={setError}
           open={open}
           close={() => setOpen(false)}

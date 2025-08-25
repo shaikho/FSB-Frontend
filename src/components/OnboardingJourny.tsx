@@ -1,15 +1,15 @@
 import {
   ReturnEnrollmentType,
+  IUqudoSdkConfig,
   OperationError,
-} from "uqudosdk-preview-web";
-import { IUqudoSdkConfig } from "uqudosdk-preview-web";
+} from "uqudosdk-web";
 import { parseJwt } from "./AuthAPI";
 import { handleNext } from "../utility/navigationUtils";
 import { TConfig, TDocumentData, TSteps } from "../types/types";
 import { Dispatch, SetStateAction } from "react";
 import { steps } from "../data/data";
 import { NavigateFunction } from "react-router-dom";
-import { getToken } from "../axios";
+import { GetSessionIDWithUqudoImage, getToken } from "../axios";
 import { uqudoObjectArabic, uqudoObjectEnglish } from "../data/uqudo";
 import { i18n } from "i18next";
 // Function to get the configuration for the SDK
@@ -35,6 +35,8 @@ type OnboardingParams = {
   setPersonalInfoStep: React.Dispatch<React.SetStateAction<number>>;
   values: TConfig;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setLivenessCheckSessionId: React.Dispatch<React.SetStateAction<string>>;
+  setUqudoToken: React.Dispatch<React.SetStateAction<string>>;
   setPersonalPhotoId: React.Dispatch<React.SetStateAction<string | undefined>>;
   setDocumentPhotoId: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
@@ -51,9 +53,11 @@ export async function onboardingJourney({
   setOpen,
   setPersonalInfoStep,
   setLoading,
+  setLivenessCheckSessionId,
   values,
   setPersonalPhotoId,
-  setDocumentPhotoId
+  setDocumentPhotoId,
+  setUqudoToken
 }: OnboardingParams) {
   const {
     idPhotoTamperingDetection,
@@ -64,7 +68,7 @@ export async function onboardingJourney({
   } = values;
   try {
     const { default: uqudoSdkFactory, DocumentType } = await import(
-      "uqudosdk-preview-web"
+      "uqudosdk-web"
     );
     // Get the SDK configuration
     const config = await getConfig();
@@ -74,6 +78,7 @@ export async function onboardingJourney({
     const docType =
       documentAuth === 3 ? DocumentType.PASSPORT : DocumentType.SDN_ID;
     setLoading(false);
+    setUqudoToken(config.accessToken);
     // Start the enrollment process
     await uqudoSdk.enrollment({
       assets: {
@@ -86,12 +91,9 @@ export async function onboardingJourney({
         disableExpiryValidation: disableExpiryValidation,
         enableAgeVerification: minimumAge,
       },
-      face: {
-        enableFacialRecognition: true,
-        maxAttempts: 3,
-      },
-      onSuccess: (result: ReturnEnrollmentType) => {
+      onSuccess: async (result: ReturnEnrollmentType) => {
         const { data } = parseJwt(result);
+        console.info("Enrollment result: ", data);
         if (data.documents.length > 0) {
           if (
             data.verifications[0].idScreenDetection.score >= idScreenDetection
@@ -155,11 +157,12 @@ export async function onboardingJourney({
               reading: data.documents[0].reading,
               face: data.documents[0].face,
               lookup: data.documents[0].lookup,
-              documentPhotoId: frontImg,
-              personalPhotoId: photoImg,
             });
             setOpen(false);
             setError("");
+            // getting session id with uqudo image
+            const sessionID = await GetSessionIDWithUqudoImage(data.documents[0].scan.frontImageId);
+            setLivenessCheckSessionId(sessionID);
             setLoading(false);
             setCurrentStep({ step: 7, title: "/scan", completed: true });
             handleNext(setCurrentStep, step + 1, steps, navigate);
