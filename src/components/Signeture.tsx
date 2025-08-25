@@ -9,7 +9,7 @@ import { handleBack, handleNext } from "../utility/navigationUtils";
 import { useNavigation } from "../contexts/NavigationProvider";
 import { steps } from "../data/data";
 import { useNavigate } from "react-router-dom";
-import signatureImg from "../assets/images/signatureImg.png";
+import signatureImg from "../assets/images/signature.svg";
 import usePreventBackNavigation from "../hooks/usePreventBackNavigation";
 import { openCIF } from "../axios";
 import Spinner from "../ui/Spinner";
@@ -160,7 +160,7 @@ const Signeture: React.FC = () => {
           <Typography variant="h2" textAlign="center">
             {t("signetureTitle")}
           </Typography>
-          <img src={signatureImg} alt="signature" width={100} height={100} />
+          <img src={signatureImg} alt="signature" width={200} height={200} />
           <input
             type="file"
             accept="image/*"

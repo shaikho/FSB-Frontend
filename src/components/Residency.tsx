@@ -59,73 +59,62 @@ const Residency: React.FC = () => {
   }, [t]);
   return (
     <MainLayout>
-      <Box
-        component="div"
-        sx={{
-          position: "relative",
+      {isLoading ? <Spinner /> : null}
+      <Typography variant="h1" color="primary">
+        {t("residency")}
+      </Typography>
+      <form
+        onSubmit={handleSubmit}
+        style={{
           display: "flex",
-          minHeight: "calc(100% - 26px)",
           flexDirection: "column",
+          justifyContent: "space-between",
           flexGrow: 1,
         }}
       >
-        {isLoading ? <Spinner /> : null}
-        <Typography variant="h1" color="primary">
-          {t("residency")}
-        </Typography>
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            flexGrow: 1,
-          }}
-        >
-          <Typography variant="body1">{t("residencyLabel")}</Typography>
-          <Autocomplete
-            options={i18n.language === "en" ? countries : sortedCountries}
-            getOptionLabel={getOptionLabel}
-            renderOption={(props, option) => (
-              <Box component="li" {...props} sx={{ display: "flex", gap: 2 }}>
-                <FlagIcon code={option.code} />
-                {t(option.title)}
-              </Box>
-            )}
-            value={countries.find((country) => country.id === residency)}
-            onChange={handleChange}
-            isOptionEqualToValue={(option, value) =>
-              option.title === value.title
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <>
-                      {residency && (
-                        <FlagIcon
-                          code={
-                            countries.find(
-                              (country) => country.id === residency
-                            )?.code || "SD"
-                          }
-                          size={16}
-                          style={{ marginRight: 8 }}
-                        />
-                      )}
-                      {params.InputProps.startAdornment}
-                    </>
-                  ),
-                }}
-              />
-            )}
-          />
-          <NavigationBtns isSubmitting={isLoading} />
-        </form>
-      </Box>
+        <Typography variant="body1">{t("residencyLabel")}</Typography>
+        <Autocomplete
+          options={i18n.language === "en" ? countries : sortedCountries}
+          getOptionLabel={getOptionLabel}
+          renderOption={(props, option) => (
+            <Box component="li" {...props} sx={{ display: "flex", gap: 2 }}>
+              <FlagIcon code={option.code} />
+              {t(option.title)}
+            </Box>
+          )}
+          value={countries.find((country) => country.id === residency)}
+          onChange={handleChange}
+          isOptionEqualToValue={(option, value) =>
+            option.title === value.title
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <>
+                    {residency && (
+                      <FlagIcon
+                        code={
+                          countries.find(
+                            (country) => country.id === residency
+                          )?.code || "SD"
+                        }
+                        size={16}
+                        style={{ marginRight: 8 }}
+                      />
+                    )}
+                    {params.InputProps.startAdornment}
+                  </>
+                ),
+              }}
+            />
+          )}
+        />
+        <NavigationBtns isSubmitting={isLoading} />
+      </form>
     </MainLayout>
   );
 };

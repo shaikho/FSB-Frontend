@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
-import { MarkEmailRead } from "@mui/icons-material";
+import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import MainLayout from "../ui/MainLayout";
@@ -177,117 +177,106 @@ const OTP: React.FC = () => {
           close={() => setOpen(false)}
         />
       )}
-      <Box
-        sx={{
-          position: "relative",
+      {isSubmitting ? <Spinner /> : null}
+
+      <Grid
+        container
+        flexDirection="column"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Typography variant="h1" fontWeight="600" color="primary">
+          {t("email3")}
+        </Typography>
+        <MarkEmailUnreadIcon color="primary" sx={{ fontSize: 100 }} />
+        <Typography variant="h2" color="primary" mb={0}>
+          {t("email4")}
+        </Typography>
+        <Typography variant="body1" textAlign="center" mb={0}>
+          {email}
+        </Typography>
+        <Typography variant="h2" color="primary" m={0}>
+          {i18n.language === "en" ? "or" : "أو"}
+        </Typography>
+        <Typography variant="body1" textAlign="center" mb={2}>
+          {mobileNumber}
+        </Typography>
+      </Grid>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{
+          direction: "ltr",
           display: "flex",
-          minHeight: "calc(100% - 26px)",
           flexDirection: "column",
+          justifyContent: "space-between",
           flexGrow: 1,
-          gap: "1rem",
         }}
       >
-        {isSubmitting ? <Spinner /> : null}
-
         <Grid
           container
-          flexDirection="column"
-          justifyContent="space-between"
+          spacing={2}
+          justifyContent="center"
           alignItems="center"
+          flexWrap="wrap"
         >
-          <Typography variant="h1" fontWeight="600" color="primary">
-            {t("email3")}
-          </Typography>
-          <MarkEmailRead color="primary" sx={{ fontSize: 100 }} />
-          <Typography variant="h2" color="primary" mb={0}>
-            {t("email4")}
-          </Typography>
-          <Typography variant="body1" textAlign="center" mb={0}>
-            {email}
-          </Typography>
-          <Typography variant="h2" color="primary" m={0}>
-            {i18n.language === "en" ? "or" : "أو"}
-          </Typography>
-          <Typography variant="body1" textAlign="center" mb={2}>
-            {mobileNumber}
-          </Typography>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Grid item key={index} xs={2}>
+              <Controller
+                name={`otp.${index}` as const}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    type="tel"
+                    autoFocus={index === 0}
+                    {...field}
+                    id={`otp-${index}`}
+                    variant="outlined"
+                    inputProps={{
+                      style: { textAlign: "center", padding: 0 },
+                      maxLength: 1,
+                    }}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(index, event.target.value)
+                    }
+                    onKeyDown={(
+                      event: React.KeyboardEvent<HTMLInputElement>
+                    ) => handleKeyDown(index, event)}
+                    onPaste={(
+                      event: React.ClipboardEvent<HTMLInputElement>
+                    ) => {
+                      const pastedText = event.clipboardData.getData("text");
+                      const otpValues = pastedText.split("").slice(0, 6); // Assuming OTP length is 6
+                      otpValues.forEach((value, idx) => {
+                        if (/^[0-9]$/.test(value)) {
+                          setValue(`otp.${idx}`, value);
+                        }
+                      });
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+          ))}
         </Grid>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          style={{
-            direction: "ltr",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            flexGrow: 1,
-          }}
-        >
-          <Grid
-            container
-            spacing={2}
-            justifyContent="center"
-            alignItems="center"
-            flexWrap="wrap"
-          >
-            {Array.from({ length: 6 }).map((_, index) => (
-              <Grid item key={index} xs={2}>
-                <Controller
-                  name={`otp.${index}` as const}
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      type="tel"
-                      autoFocus={index === 0}
-                      {...field}
-                      id={`otp-${index}`}
-                      variant="outlined"
-                      inputProps={{
-                        style: { textAlign: "center", padding: 0 },
-                        maxLength: 1,
-                      }}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                        handleChange(index, event.target.value)
-                      }
-                      onKeyDown={(
-                        event: React.KeyboardEvent<HTMLInputElement>
-                      ) => handleKeyDown(index, event)}
-                      onPaste={(
-                        event: React.ClipboardEvent<HTMLInputElement>
-                      ) => {
-                        const pastedText = event.clipboardData.getData("text");
-                        const otpValues = pastedText.split("").slice(0, 6); // Assuming OTP length is 6
-                        otpValues.forEach((value, idx) => {
-                          if (/^[0-9]$/.test(value)) {
-                            setValue(`otp.${idx}`, value);
-                          }
-                        });
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-            ))}
-          </Grid>
-          <Box textAlign="center" mt={2}>
-            {resend ? (
-              <Button variant="text" onClick={resendHandler} disabled={loading}>
-                {t("sendOTP")}
-              </Button>
-            ) : (
-              <>
-                <span>{t("resend")}</span>{" "}
-                <CountdownTimer
-                  setResend={setResend}
-                  setReqId={setReqId}
-                  resend={resend}
-                  tries={tries}
-                />
-              </>
-            )}
-          </Box>
-          <NavigationBtns isSubmitting={isSubmitting} />
-        </form>
-      </Box>
+        <Box textAlign="center" mt={2}>
+          {resend ? (
+            <Button variant="text" onClick={resendHandler} disabled={loading}>
+              {t("sendOTP")}
+            </Button>
+          ) : (
+            <>
+              <span>{t("resend")}</span>{" "}
+              <CountdownTimer
+                setResend={setResend}
+                setReqId={setReqId}
+                resend={resend}
+                tries={tries}
+              />
+            </>
+          )}
+        </Box>
+        <NavigationBtns isSubmitting={isSubmitting} />
+      </form>
     </MainLayout>
   );
 };

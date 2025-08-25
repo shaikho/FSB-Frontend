@@ -21,7 +21,7 @@ import { useNavigation } from "../contexts/NavigationProvider";
 import { handleNext } from "../utility/navigationUtils";
 import { countryCodes } from "../data/data";
 import Spinner from "../ui/Spinner";
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
+import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
 import { lazy } from "react";
 import { sendOTP } from "../axios";
 
@@ -87,8 +87,7 @@ const EmailVerification: React.FC = () => {
         const responseCode = await sendOTP(
           data.email.trim(),
           data.countryCode.slice(1) + data.phoneNumber,
-          nationalIDNumber,
-          language
+          nationalIDNumber
         );
         if (responseCode === 200) {
           setCurrentStep({ step: 3, title: "/email-verifcation", completed: true });
@@ -183,42 +182,32 @@ const EmailVerification: React.FC = () => {
           close={() => setOpen(false)}
         />
       )}
+      {isSubmitting ? <Spinner /> : null}
       <Box
         sx={{
+          alignSelf: "center",
           display: "flex",
-          height: "calc(100% - 26px)",
           flexDirection: "column",
-          flexGrow: 1,
-          position: "relative",
-          gap: "1rem",
+          justifyContent: "flex-start",
+          alignItems: "center",
         }}
       >
-        {isSubmitting ? <Spinner /> : null}
-        <Box
-          sx={{
-            alignSelf: "center",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h1" color="primary">
-            {t("email")}
-          </Typography>
-          <MarkEmailReadIcon color="primary" sx={{ fontSize: 100 }} />
-          <Typography variant="h2">{t("email2")}</Typography>
-        </Box>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            flexGrow: 1,
-          }}
-        >
-          {/* <Controller
+        <Typography variant="h1" color="primary">
+          {t("email")}
+        </Typography>
+        <MoveToInboxIcon color="primary" sx={{ fontSize: 100 }} />
+        <Typography variant="h2">{t("email2")}</Typography>
+      </Box>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          flexGrow: 1,
+        }}
+      >
+        {/* <Controller
             name="nationalIDNumber"
             control={control}
             render={({ field }) => (
@@ -242,7 +231,7 @@ const EmailVerification: React.FC = () => {
               />
             )}
           /> */}
-          {/* <Grid container alignItems="center" my={2}>
+        {/* <Grid container alignItems="center" my={2}>
             <Grid item xs={5}>
               <Divider />
             </Grid>
@@ -255,135 +244,134 @@ const EmailVerification: React.FC = () => {
               <Divider />
             </Grid>
           </Grid> */}
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                fullWidth
-                {...field}
-                variant="outlined"
-                placeholder={t("emailPlaceholder")}
-                error={!!errors.email}
-                helperText={errors.email?.message}
-                onBlur={async () => {
-                  field.onBlur();
-                  await trigger("email");
-                }}
-                onChange={handleEmailChange}
-                InputProps={{
-                  endAdornment: !field.value && (
-                    <Typography color="error" pt={2}>*</Typography>
-                  ),
-                }}
-              />
-            )}
-          />
-          <Grid container alignItems="center" my={2}>
-            <Grid item xs={5}>
-              <Divider />
-            </Grid>
-            <Grid item xs={2}>
-              <Typography variant="h2" sx={{ textAlign: "center", margin: 0 }}>
-                {i18n.language === "en" ? "and" : "و"}
-              </Typography>
-            </Grid>
-            <Grid item xs={5}>
-              <Divider />
-            </Grid>
+        <Controller
+          name="email"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              fullWidth
+              {...field}
+              variant="outlined"
+              placeholder={t("emailPlaceholder")}
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              onBlur={async () => {
+                field.onBlur();
+                await trigger("email");
+              }}
+              onChange={handleEmailChange}
+              InputProps={{
+                endAdornment: !field.value && (
+                  <Typography color="error" pt={2}>*</Typography>
+                ),
+              }}
+            />
+          )}
+        />
+        <Grid container alignItems="center" my={2}>
+          <Grid item xs={5}>
+            <Divider />
           </Grid>
-          <Grid
-            container
-            spacing={1}
-            justifyContent="space-between"
-            flexWrap="nowrap"
-          >
-            <Grid item xs={6} sx={{ flexGrow: 1, flexShrink: 0 }}>
-              <FormControl fullWidth>
-                <InputLabel id="country-code-label" sx={{ display: "none" }}>
-                  {t("Country Code")}
-                </InputLabel>
-                <Controller
-                  name="countryCode"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      labelId="country-code-label"
-                      id="Country Codes"
-                      label={t("Country Code")}
-                      error={Boolean(errors.countryCode)}
-                      onBlur={async () => {
-                        field.onBlur();
-                        await trigger("countryCode");
-                      }}
-                    >
-                      {i18n.language === "en"
-                        ? countryCodes.map((option) => (
-                          <MenuItem key={option.label} value={option.code}>
-                            {t(`${option.label}`)} (
-                            {i18n.language === "en"
-                              ? option.code
-                              : `${option.code.slice(
-                                1,
-                                option.code.length
-                              )}+`}
-                            )
-                          </MenuItem>
-                        ))
-                        : sortedCountries.map((option) => (
-                          <MenuItem key={option.label} value={option.code}>
-                            {t(`${option.label}`)} (
-                            {i18n.language === "en"
-                              ? option.code
-                              : `${option.code.slice(
-                                1,
-                                option.code.length
-                              )}+`}
-                            )
-                          </MenuItem>
-                        ))}
-                    </Select>
-                  )}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={6} sx={{ flexGrow: 0, flexShrink: 1 }}>
+          <Grid item xs={2}>
+            <Typography variant="h2" sx={{ textAlign: "center", margin: 0 }}>
+              {i18n.language === "en" ? "and" : "و"}
+            </Typography>
+          </Grid>
+          <Grid item xs={5}>
+            <Divider />
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          spacing={1}
+          justifyContent="space-between"
+          flexWrap="nowrap"
+        >
+          <Grid item xs={6} sx={{ flexGrow: 1, flexShrink: 0 }}>
+            <FormControl fullWidth>
+              <InputLabel id="country-code-label" sx={{ display: "none" }}>
+                {t("Country Code")}
+              </InputLabel>
               <Controller
-                name="phoneNumber"
+                name="countryCode"
                 control={control}
                 render={({ field }) => (
-                  <TextField
-                    fullWidth
+                  <Select
                     {...field}
-                    dir={i18n.language === "en" ? "ltr" : "rtl"}
-                    inputProps={{
-                      style: {
-                        direction: i18n.language === "en" ? "ltr" : "rtl",
-                      },
-                    }}
-                    type="tel"
-                    error={!!errors.phoneNumber}
-                    helperText={errors.phoneNumber?.message}
-                    placeholder={t("PhoneNumberPlaceholder")}
+                    labelId="country-code-label"
+                    id="Country Codes"
+                    label={t("Country Code")}
+                    error={Boolean(errors.countryCode)}
                     onBlur={async () => {
                       field.onBlur();
-                      await trigger("phoneNumber");
+                      await trigger("countryCode");
                     }}
-                    onChange={handlePhoneNumberChange}
-                    InputProps={{
-                      endAdornment: !field.value && (
-                        <Typography color="error" pt={2}>*</Typography>
-                      ),
-                    }}
-                  />
+                  >
+                    {i18n.language === "en"
+                      ? countryCodes.map((option) => (
+                        <MenuItem key={option.label} value={option.code}>
+                          {t(`${option.label}`)} (
+                          {i18n.language === "en"
+                            ? option.code
+                            : `${option.code.slice(
+                              1,
+                              option.code.length
+                            )}+`}
+                          )
+                        </MenuItem>
+                      ))
+                      : sortedCountries.map((option) => (
+                        <MenuItem key={option.label} value={option.code}>
+                          {t(`${option.label}`)} (
+                          {i18n.language === "en"
+                            ? option.code
+                            : `${option.code.slice(
+                              1,
+                              option.code.length
+                            )}+`}
+                          )
+                        </MenuItem>
+                      ))}
+                  </Select>
                 )}
               />
-            </Grid>
+            </FormControl>
           </Grid>
-          <NavigationBtns isSubmitting={isSubmitting} />
-        </form>
-      </Box>
+          <Grid item xs={6} sx={{ flexGrow: 0, flexShrink: 1 }}>
+            <Controller
+              name="phoneNumber"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  fullWidth
+                  {...field}
+                  dir={i18n.language === "en" ? "ltr" : "rtl"}
+                  inputProps={{
+                    style: {
+                      direction: i18n.language === "en" ? "ltr" : "rtl",
+                    },
+                  }}
+                  type="tel"
+                  error={!!errors.phoneNumber}
+                  helperText={errors.phoneNumber?.message}
+                  placeholder={t("PhoneNumberPlaceholder")}
+                  onBlur={async () => {
+                    field.onBlur();
+                    await trigger("phoneNumber");
+                  }}
+                  onChange={handlePhoneNumberChange}
+                  InputProps={{
+                    endAdornment: !field.value && (
+                      <Typography color="error" pt={2}>*</Typography>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+        <NavigationBtns isSubmitting={isSubmitting} />
+      </form>
     </MainLayout>
   );
 };

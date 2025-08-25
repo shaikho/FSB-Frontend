@@ -44,43 +44,61 @@ const NavigationBtns: React.FC<NavigationBtnsProps> = ({
   };
 
   return (
-    <Grid
-      alignSelf="flex-end"
-      container
-      justifyContent="space-between"
-      sx={{
-        marginTop: "auto",
-        direction: i18n.language === "ar" ? "rtl" : "ltr",
+    <div
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 1000,
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        borderRadius: "15px",
+        padding: "15px 25px",
+        boxShadow: "0 8px 32px rgba(0, 0, 81, 0.3)",
+        backdropFilter: "blur(10px)",
+        border: "1px solid rgba(255, 255, 255, 0.2)",
+        minWidth: "300px",
       }}
     >
-      <Grid item>
-        <Button
-          disabled={isSubmitting}
-          variant="outlined"
-          onClick={handleBackClick}
-          sx={{
-            display: "flex",
-          }}
-        >
-          <ArrowBackIos />
-          {t("back")}
-        </Button>
+      <Grid
+        alignSelf="flex-end"
+        container
+        justifyContent="space-between"
+        sx={{
+          direction: i18n.language === "ar" ? "rtl" : "ltr",
+        }}
+      >
+        <Grid item>
+          <Button
+            disabled={isSubmitting}
+            variant="outlined"
+            onClick={handleBackClick}
+            sx={{
+              display: "flex",
+              fontFamily: "Exo Bold",
+            }}
+          >
+            <ArrowBackIos />
+            {t("back")}
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            variant="contained"
+            onClick={handleNextClick}
+            sx={{
+              display: "flex",
+              fontFamily: "Exo Bold",
+            }}
+          >
+            {t("next")}
+            <ArrowForwardIos />
+          </Button>
+        </Grid>
       </Grid>
-      <Grid item>
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          variant="contained"
-          onClick={handleNextClick}
-          sx={{
-            display: "flex",
-          }}
-        >
-          {t("next")}
-          <ArrowForwardIos />
-        </Button>
-      </Grid>
-    </Grid>
+    </div>
   );
 };
 

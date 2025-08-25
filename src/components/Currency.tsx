@@ -59,78 +59,67 @@ const Currency: React.FC = () => {
 
   return (
     <MainLayout>
-      <Box
-        sx={{
-          position: "relative",
-          minHeight: "calc(100% - 26px)",
+      {isSubmitting ? <Spinner /> : null}
+      <Typography variant="h1" color="primary">
+        {t("currency type")}
+      </Typography>
+      <form
+        onSubmit={handleSubmit(submitFunction)}
+        style={{
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
           flexGrow: 1,
-          gap: "1rem",
         }}
       >
-        {isSubmitting ? <Spinner /> : null}
-        <Typography variant="h1" color="primary">
-          {t("currency type")}
+        <Typography variant="body1" mb={4}>
+          {t("currency")}
         </Typography>
-        <form
-          onSubmit={handleSubmit(submitFunction)}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            flexGrow: 1,
-          }}
-        >
-          <Typography variant="body1" mb={4}>
-            {t("currency")}
-          </Typography>
-          <Grid container flexDirection="column" gap={1.6}>
-            {currencies.map((currencyOption) => (
-              <Grid item key={currencyOption.id}>
-                <FormControlLabel
-                  control={
-                    <Controller
-                      name="currencyValues"
-                      control={control}
-                      render={({ field }) => (
-                        <Checkbox
-                          {...field}
-                          checked={field.value.includes(currencyOption.id)}
-                          disabled={currencyOption.id === 938}
-                          onChange={(e) => {
-                            const newValue = e.target.checked
-                              ? [...field.value, currencyOption.id]
-                              : field.value.filter(
-                                (val) => val !== currencyOption.id
-                              );
-                            field.onChange(newValue);
-                          }}
-                        />
-                      )}
-                    />
-                  }
-                  label={t(currencyOption.title)}
-                  sx={{
-                    "& .MuiTypography-root": {
-                      fontFamily:
-                        i18n.language === "en"
-                          ? "Exo Bold"
-                          : "TheSansArabic-Bold",
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      padding: 0,
-                      margin: 0,
-                      paddingInlineStart: "0.5rem",
-                    },
-                  }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-          <NavigationBtns isSubmitting={isSubmitting} />
-        </form>
-      </Box>
+        <Grid container flexDirection="column" gap={1.6}>
+          {currencies.map((currencyOption) => (
+            <Grid item key={currencyOption.id}>
+              <FormControlLabel
+                control={
+                  <Controller
+                    name="currencyValues"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value.includes(currencyOption.id)}
+                        disabled={currencyOption.id === 938}
+                        onChange={(e) => {
+                          const newValue = e.target.checked
+                            ? [...field.value, currencyOption.id]
+                            : field.value.filter(
+                              (val) => val !== currencyOption.id
+                            );
+                          field.onChange(newValue);
+                        }}
+                      />
+                    )}
+                  />
+                }
+                label={t(currencyOption.title)}
+                sx={{
+                  "& .MuiTypography-root": {
+                    fontFamily:
+                      i18n.language === "en"
+                        ? "Exo Bold"
+                        : "TheSansArabic-Bold",
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    padding: 0,
+                    margin: 0,
+                    paddingInlineStart: "0.5rem",
+                  },
+                }}
+              />
+            </Grid>
+          ))}
+        </Grid>
+        <NavigationBtns isSubmitting={isSubmitting} />
+      </form>
     </MainLayout>
   );
 };

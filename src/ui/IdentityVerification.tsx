@@ -12,6 +12,8 @@ import {
 import { useNavigation } from "../contexts/NavigationProvider";
 import { handleNext, handleBack } from "../utility/navigationUtils";
 import { useNavigate } from "react-router-dom";
+import RememberMeOutlinedIcon from '@mui/icons-material/RememberMeOutlined';
+import MonochromePhotosOutlinedIcon from '@mui/icons-material/MonochromePhotosOutlined';
 
 const IdentityVerification: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -22,13 +24,13 @@ const IdentityVerification: React.FC = () => {
     {
       id: 1,
       id2: "الأولى",
-      icon: <CreditScore sx={{ fontSize: 40 }} />,
+      icon: <RememberMeOutlinedIcon sx={{ fontSize: 40 }} />,
       title: t("scanStep"),
     },
     {
       id: 2,
       id2: "الثانية",
-      icon: <DocumentScanner sx={{ fontSize: 40 }} />,
+      icon: <MonochromePhotosOutlinedIcon sx={{ fontSize: 40 }} />,
       title: t("scanDocumentStep"),
     }, {
       id: 2,

@@ -33,7 +33,7 @@ export default function AppbarUI() {
       position="relative"
       elevation={0}
       sx={{
-        background: "linear-gradient(to right, #000051, #000082 )",
+        background: "linear-gradient(135deg, #000051 0%, #1a1a7e 25%, #000082 50%, #2d2db8 75%, #0000a0 100%)",
       }}
     >
       <Toolbar

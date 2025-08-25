@@ -58,67 +58,55 @@ const Identity: React.FC = () => {
   }, [setCurrentStep]);
   return (
     <MainLayout>
-      <Box
-        component="div"
-        sx={{
-          position: "relative",
+      {error === "" ? null : (
+        <RequestErrors
+          open={open}
+          close={setOpen}
+          errors={error}
+          setError={setError}
+        />
+      )}
+      {isLoading ? <Spinner /> : null}
+      <Typography
+        variant="h1"
+        fontWeight="600"
+        color="primary"
+        textAlign="center"
+        sx={{ marginBottom: "40px" }}
+      >
+        {t("ID type")}
+      </Typography>
+      <form
+        onSubmit={handleSubmit}
+        style={{
           display: "flex",
-          minHeight: "calc(100% - 26px)",
           flexDirection: "column",
           flexGrow: 1,
-          gap: "1rem",
         }}
       >
-        {error === "" ? null : (
-          <RequestErrors
-            open={open}
-            close={setOpen}
-            errors={error}
-            setError={setError}
-          />
-        )}
-        {isLoading ? <Spinner /> : null}
-        <Typography
-          variant="h1"
-          fontWeight="600"
-          color="primary"
-          textAlign="center"
-          sx={{ marginBottom: "40px" }}
-        >
-          {t("ID type")}
+        <Typography variant="body1" color="initial" fontWeight="500" mb={1}>
+          {t("ID")}
         </Typography>
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            flexGrow: 1,
-          }}
+        <Select
+          value={identityType}
+          onChange={handleChange}
+          sx={{ width: "100%", display: "flex" }}
+          displayEmpty
+          inputProps={{ "aria-label": "Select identity type" }}
         >
-          <Typography variant="body1" color="initial" fontWeight="500" mb={1}>
-            {t("ID")}
-          </Typography>
-          <Select
-            value={identityType}
-            onChange={handleChange}
-            sx={{ width: "100%", display: "flex" }}
-            displayEmpty
-            inputProps={{ "aria-label": "Select identity type" }}
-          >
-            <MenuItem value="" disabled>
-              {t("selectID")}
+          <MenuItem value="" disabled>
+            {t("selectID")}
+          </MenuItem>
+          {identityTypes.map((type) => (
+            <MenuItem key={type.id} value={type.title}>
+              <Typography variant="body2" color="black">
+                {t(`${type.title}`)}
+              </Typography>
             </MenuItem>
-            {identityTypes.map((type) => (
-              <MenuItem key={type.id} value={type.title}>
-                <Typography variant="body2" color="black">
-                  {t(`${type.title}`)}
-                </Typography>
-              </MenuItem>
-            ))}
-          </Select>
-          <NavigationBtns isSubmitting={isLoading} />
-        </form>
-      </Box>
+          ))}
+        </Select>
+        <NavigationBtns isSubmitting={isLoading} />
+      </form>
     </MainLayout>
   );
 };

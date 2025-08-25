@@ -48,7 +48,7 @@ export const theme = createTheme({
       textAlign: "center",
       margin: "2.2rem 0",
       color: "primary",
-      fontFamily: i18n.language === "en" ? "Exo Bold" : "TheSansArabic-Bold",
+      fontFamily: i18n.language === "en" ? "Exo Bold" : "Exo Bold",
       fontSize: "1.5rem",
       [`@media (min-width:${breakpoints.values.sm}px)`]: {
         fontSize: "2.5rem",
@@ -69,7 +69,7 @@ export const theme = createTheme({
       color: "primary",
       margin: "2.2rem 0",
       fontFamily:
-        i18n.language === "en" ? "Exo SemiBold" : "TheSansArabic-Bold",
+        i18n.language === "en" ? "Exo SemiBold" : "Exo SemiBold",
       fontSize: "0.875rem",
       [`@media (min-width:${breakpoints.values.sm}px)`]: {
         fontSize: "1rem",
@@ -89,7 +89,7 @@ export const theme = createTheme({
       textAlign: "center",
       margin: "40px 0",
       color: "primary",
-      fontFamily: i18n.language === "en" ? "Exo Bold" : "TheSansArabic-Bold",
+      fontFamily: i18n.language === "en" ? "Exo Bold" : "Exo Bold",
       fontSize: "1rem",
       [`@media (min-width:${breakpoints.values.sm}px)`]: {
         fontSize: "1.25rem",
@@ -110,7 +110,7 @@ export const theme = createTheme({
       color: "primary",
       margin: "2.2rem 0",
       fontFamily:
-        i18n.language === "en" ? "Exo SemiBold" : "TheSansArabic-Bold",
+        i18n.language === "en" ? "Exo SemiBold" : "Exo SemiBold",
       fontSize: "0.875rem",
       [`@media (min-width:${breakpoints.values.sm}px)`]: {
         fontSize: "1rem",
@@ -126,7 +126,7 @@ export const theme = createTheme({
       },
     },
     body1: {
-      fontFamily: i18n.language === "en" ? "Exo light" : "TheSansArabic-Bold",
+      fontFamily: i18n.language === "en" ? "Exo Light" : "Exo Light",
       fontWeight: "Bold",
       marginBottom: "10px",
       fontSize: "1rem",
@@ -159,7 +159,7 @@ export const theme = createTheme({
       },
     },
     body3: {
-      fontFamily: i18n.language === "en" ? "Exo light" : "TheSansArabic-Bold",
+      fontFamily: i18n.language === "en" ? "Exo Light" : "Exo Light",
       fontWeight: "Bold",
       marginBottom: "10px",
       fontSize: "1rem",
@@ -220,7 +220,7 @@ export const theme = createTheme({
           padding: "0.25rem 0.5rem",
           borderRadius: "5px",
           fontFamily:
-            i18n.language === "en" ? "Exo Bold" : "TheSansArabic-Bold",
+            i18n.language === "en" ? "Exo Bold" : "Exo Bold",
         },
       },
     },

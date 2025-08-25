@@ -4,8 +4,8 @@ import { useAuth } from "../contexts/AuthProvider";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import passportImg from "../assets/images/passpord.png";
-import idImage from "../assets/images/id.png";
+import passportImg from "../assets/images/passport.svg";
+import idImage from "../assets/images/identification.svg";
 import { useNavigation } from "../contexts/NavigationProvider";
 import { handleBack } from "../utility/navigationUtils";
 import { useNavigate } from "react-router-dom";
@@ -61,6 +61,8 @@ export default function Scan() {
   const navigate = useNavigate();
 
   const handleEnrollment = async () => {
+    if (loading) return; // Prevent multiple clicks
+
     try {
       setLoading(true);
       const { onboardingJourney } = await import("./OnboardingJourny");
@@ -83,13 +85,13 @@ export default function Scan() {
         setDocumentPhotoId,
         setUqudoToken
       });
-      setLoading(false);
     } catch (err) {
       if (err) {
-        setLoading(false);
         setOpen(false);
         setError("");
       }
+    } finally {
+      setLoading(false);
     }
   };
   usePreventBackNavigation();
@@ -107,47 +109,51 @@ export default function Scan() {
         />
       )}
       {loading ? <Spinner /> : null}
+      <Typography variant="h1" color="primary" mb={0}>
+        {documentAuth === 3 ? t("scanPassport") : t("scanID")}
+      </Typography>
       <Box
         component="div"
         sx={{
-          position: "relative",
+          paddingTop: "30px",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          height: "calc(100% - 26px)",
-          flexGrow: 1,
-          gap: "1rem",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <Typography variant="h1" color="primary" mb={0}>
-          {documentAuth === 3 ? t("scanPassport") : t("scanID")}
-        </Typography>
-        <Box
-          component="div"
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <LazyImage
-            src={documentAuth === 3 ? passportImg : idImage}
-            alt={documentAuth === 3 ? t("passport") : t("ID")}
-          />
-        </Box>
-        <Typography variant="h2" color="primary" textAlign="start">
-          {t("noteTitle")}
-        </Typography>
-        <ul>
-          {notes.map((note) => (
-            <li key={note.id}>{t(`${note.title}`)}</li>
-          ))}
-        </ul>
+        <LazyImage
+          src={documentAuth === 3 ? passportImg : idImage}
+          alt={documentAuth === 3 ? t("passport") : t("ID")}
+        />
+      </Box>
+      <Typography variant="h2" color="primary" textAlign="start">
+        {t("noteTitle")}
+      </Typography>
+      <ul>
+        {notes.map((note) => (
+          <li key={note.id}>{t(`${note.title}`)}</li>
+        ))}
+      </ul>
+      <div
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 1000,
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
+          borderRadius: "15px",
+          padding: "15px 25px",
+          boxShadow: "0 8px 32px rgba(0, 0, 81, 0.3)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          minWidth: "300px",
+        }}
+      >
         <Grid
           container
           justifyContent="space-between"
           sx={{
-            marginTop: "auto",
             direction: i18n.language === "ar" ? "rtl" : "ltr",
           }}
         >
@@ -156,6 +162,10 @@ export default function Scan() {
             onClick={() =>
               handleBack(setCurrentStep, currentStep.step, steps, navigate)
             }
+            disabled={loading}
+            sx={{
+              fontFamily: "Exo Bold",
+            }}
           >
             <ArrowBackIos />
             {t("back")}
@@ -164,12 +174,17 @@ export default function Scan() {
             variant="contained"
             onClick={handleEnrollment}
             disabled={loading}
+            sx={{
+              fontFamily: "Exo Bold",
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
           >
-            {t("next")}
-            <ArrowForwardIos />
+            {loading ? t("loading") || "Loading..." : t("next")}
+            {!loading && <ArrowForwardIos />}
           </Button>
         </Grid>
-      </Box>
+      </div>
     </MainLayout>
   );
 }

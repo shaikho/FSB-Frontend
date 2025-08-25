@@ -46,8 +46,15 @@ const OnboardingScreen: React.FC = () => {
       .regex(/^\d+$/, { message: t('nationalIDNumberMaxError') })
       .refine(value => !isNaN(Number(value)), { message: t('nationalIDNumberMaxError') })
   });
-  const [open, setOpen] = useState(livenessCheckError ? true : false);
+  const [open, setOpen] = useState(false);
   const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    if (livenessCheckError) {
+      setError(livenessCheckError);
+      setOpen(true);
+    }
+  }, [livenessCheckError]);
   type FormFields = z.infer<typeof schema>;
 
   const {
@@ -94,7 +101,6 @@ const OnboardingScreen: React.FC = () => {
       try {
         const response = await getCustomerCivilRecord(nationalIDNumber);
         const isVerified = await IsVerified(nationalIDNumber);
-        console.log("IsVerified response:", isVerified);
         if (!isVerified && response.responseCode !== -1) {
           setSubmittedData({
             ...submittedData,
@@ -139,12 +145,12 @@ const OnboardingScreen: React.FC = () => {
   }, [setCurrentStep]);
   return (
     <MainLayout>
-      {error || livenessCheckError && (
+      {(error || livenessCheckError) && (
         <RequestErrors
           errors={error || livenessCheckError}
           setError={setError}
           open={open}
-          close={() => setOpen(false)}
+          close={setOpen}
         />
       )}
       <Box

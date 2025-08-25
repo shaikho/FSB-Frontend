@@ -91,8 +91,7 @@ interface OpenCIF {
 export const sendOTP = async (
   email: string | undefined,
   phone: string,
-  nationalId: string,
-  language: string
+  nationalId: string
 ) => {
   const BASE_URL = await getBaseUrl();
   const url = `${BASE_URL}/otp/send`;

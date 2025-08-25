@@ -22,19 +22,43 @@ export default function RequestErrors({
   close,
 }: FormErrorMessagesProps) {
   const { i18n } = useTranslation();
+  
+  const handleClose = () => {
+    close(false);
+    setError("");
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={() => {
-        close(false);
-        setError("");
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      sx={{
+        zIndex: 9999,
+        "& .MuiDialog-paper": {
+          borderRadius: "12px",
+          padding: "8px",
+        },
       }}
     >
-      <DialogTitle sx={{ color: "red" }}>
+      <DialogTitle 
+        sx={{ 
+          color: "red",
+          fontFamily: "Exo Bold",
+          textAlign: "center",
+        }}
+      >
         {i18n.language === "en" ? "Error!" : "خطأ!"}
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>
+        <DialogContentText
+          sx={{
+            fontFamily: "Exo Light",
+            textAlign: "center",
+            fontSize: "1rem",
+          }}
+        >
           {errors.length > 0
             ? errors
             : i18n.language === "en"
@@ -42,13 +66,16 @@ export default function RequestErrors({
             : "لا يوجد اخطاء"}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ justifyContent: "center", paddingBottom: "16px" }}>
         <Button
-          onClick={() => {
-            close(false);
-            setError("");
-          }}
+          onClick={handleClose}
           color="primary"
+          variant="contained"
+          sx={{
+            fontFamily: "Exo Bold",
+            borderRadius: "8px",
+            padding: "8px 24px",
+          }}
         >
           {i18n.language === "en" ? "Close" : "اغلاق"}
         </Button>
