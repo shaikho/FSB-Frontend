@@ -38,13 +38,17 @@ const OnboardingScreen: React.FC = () => {
     setPersonalInfoStep,
     error: livenessCheckError
   } = useNavigation();
-  const { nationalIDNumber, setNationalIDNumber, submittedData, setSubmittedData } = useAuth();
+  const { nationalIDNumber, setNationalIDNumber, nationalIDIssueDate, setNationalIDIssueDate, submittedData, setSubmittedData } = useAuth();
   const schema = z.object({
     nationalIDNumber: z.string()
       .min(11, { message: t('nationalIDNumberMaxError') })
       .max(11, { message: t('nationalIDNumberMaxError') })
       .regex(/^\d+$/, { message: t('nationalIDNumberMaxError') })
-      .refine(value => !isNaN(Number(value)), { message: t('nationalIDNumberMaxError') })
+      .refine(value => !isNaN(Number(value)), { message: t('nationalIDNumberMaxError') }),
+    nationalIDIssueDate: z.date({
+      required_error: t('nationalIDIssueDateRequired') || "National ID issue date is required",
+      invalid_type_error: t('nationalIDIssueDateRequired') || "National ID issue date is required"
+    })
   });
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string>("");
@@ -59,12 +63,12 @@ const OnboardingScreen: React.FC = () => {
 
   const {
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     trigger,
     setValue,
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
-    defaultValues: { nationalIDNumber: "" },
+    defaultValues: { nationalIDNumber: "", nationalIDIssueDate: undefined },
     mode: "onBlur",
   });
   const handlenationalIDNumberChange = useCallback(
@@ -81,18 +85,19 @@ const OnboardingScreen: React.FC = () => {
         };
       }
     },
-    [setValue]
+    [setValue, setNationalIDNumber]
   );
 
   const handleSubmit = async () => {
     setIsLoading(true);
 
-    // Validate the nationalIDNumber before proceeding
+    // Validate both fields before proceeding
     const isNationalIDValid = await trigger("nationalIDNumber");
+    const isIssueDateValid = await trigger("nationalIDIssueDate");
     const currentNationalID = nationalIDNumber || "";
 
-    // Check if nationalIDNumber is valid and not empty
-    if (!isNationalIDValid || currentNationalID.length !== 11 || !/^\d+$/.test(currentNationalID)) {
+    // Check if both fields are valid
+    if (!isNationalIDValid || !isIssueDateValid || currentNationalID.length !== 11 || !/^\d+$/.test(currentNationalID) || !nationalIDIssueDate) {
       setIsLoading(false);
       return;
     }
@@ -104,7 +109,7 @@ const OnboardingScreen: React.FC = () => {
         if (!isVerified && response.responseCode !== -1) {
           setSubmittedData({
             ...submittedData,
-            fullNameArabic: response.fullNameArabic,
+            fullNameArabic: response.fullNameArabic
           });
           setCurrentStep({ step: 1, title: "/terms", completed: true });
           handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
@@ -188,6 +193,41 @@ const OnboardingScreen: React.FC = () => {
               onChange={handlenationalIDNumberChange}
               InputProps={{
                 endAdornment: !field.value && (
+                  <Typography color="error" pt={2}>*</Typography>
+                ),
+              }}
+            />
+          )}
+        />
+        <br />
+        <Typography variant="body1" color="initial" m={0} p={0} fontSize={13}>
+          {t("nationalIDIssueDate") || "National ID Issue Date"}
+        </Typography>
+        <Controller
+          name="nationalIDIssueDate"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              fullWidth
+              type="date"
+              variant="outlined"
+              error={!!errors.nationalIDIssueDate}
+              helperText={errors.nationalIDIssueDate?.message}
+              value={nationalIDIssueDate ? nationalIDIssueDate.toISOString().split('T')[0] : ''}
+              onChange={(e) => {
+                const selectedDate = e.target.value ? new Date(e.target.value) : null;
+                setNationalIDIssueDate(selectedDate);
+                field.onChange(selectedDate);
+              }}
+              onBlur={field.onBlur}
+              inputProps={{
+                max: new Date().toISOString().split('T')[0]
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              InputProps={{
+                endAdornment: !nationalIDIssueDate && (
                   <Typography color="error" pt={2}>*</Typography>
                 ),
               }}

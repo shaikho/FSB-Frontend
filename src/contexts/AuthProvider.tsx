@@ -33,6 +33,8 @@ interface AuthContextProps {
   photo: string;
   nationalIDNumber: string;
   setNationalIDNumber: React.Dispatch<React.SetStateAction<string>>;
+  nationalIDIssueDate: Date | null;
+  setNationalIDIssueDate: React.Dispatch<React.SetStateAction<Date | null>>;
   WorkedInGoverment: boolean | undefined;
   setWorkedInGoverment: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   UsCitizen: boolean | undefined;
@@ -79,6 +81,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [email, setEmail] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [nationalIDNumber, setNationalIDNumber] = useState<string>("");
+  const [nationalIDIssueDate, setNationalIDIssueDate] = useState<Date | null>(null);
   const [countryCode, setCountryCode] = useState<string | undefined>(undefined);
   const [residency, setResidency] = useState<number>(729);
   const [currency, setCurrency] = useState<number[]>([938]);
@@ -184,6 +187,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setReqId,
     nationalIDNumber,
     setNationalIDNumber,
+    nationalIDIssueDate,
+    setNationalIDIssueDate,
     WorkedInGoverment,
     setWorkedInGoverment,
     UsCitizen,

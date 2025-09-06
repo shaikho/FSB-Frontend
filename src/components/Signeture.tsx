@@ -110,7 +110,8 @@ const Signeture: React.FC = () => {
           UsAccount: contextValue.submittedData.UsAccount,
           documentPhotoId: contextValue.documentData.documentPhotoId,
           personalPhotoId: contextValue.documentData.personalPhotoId,
-          branchCode: contextValue.submittedData.branch
+          branchCode: contextValue.submittedData.branch,
+          nationalIDIssueDate: contextValue.nationalIDIssueDate
         };
         const { done, message } = await openCIF(data);
         setDone(done);

@@ -133,45 +133,45 @@ export default function PersonalInfo1({
     const isVerified = await IsVerified(nationalIDNumber);
     setIsLoading(false);
     if (!isVerified) {
-      await updateIsVerified(nationalIDNumber, true);
-      const { LivenessCheckJourney } = await import("./LivenessCheckJourney");
-      const isNationalIDCheck = false;
-      // TODO: call liveness check session id
-      const sessionId = livenessCheckSessionId;
-      const wasSuccessful = await LivenessCheckJourney({
-        setError,
-        navigate,
-        i18n,
-        setLoading: () => { },
-        setOpen: () => { },
-        sessionId,
-        setShowNationalNumberForm,
-        setLivenessCheck,
-        isNationalIDCheck,
-        documentData
-      });
-      if (wasSuccessful) {
+      // await updateIsVerified(nationalIDNumber, true);
+      // const { LivenessCheckJourney } = await import("./LivenessCheckJourney");
+      // const isNationalIDCheck = false;
+      // // TODO: call liveness check session id
+      // const sessionId = livenessCheckSessionId;
+      // const wasSuccessful = await LivenessCheckJourney({
+      //   setError,
+      //   navigate,
+      //   i18n,
+      //   setLoading: () => { },
+      //   setOpen: () => { },
+      //   sessionId,
+      //   setShowNationalNumberForm,
+      //   setLivenessCheck,
+      //   isNationalIDCheck,
+      //   documentData
+      // });
+      // if (wasSuccessful) {
         setCurrentStep({ step: 8, title: "/display-personal-info", completed: true });
         handleNext(setCurrentStep, currentStep.step + 1, steps, navigate);
-      } else {
-        // national number id error message
-        if (document === 4) {
-          setError(
-            i18n.language === "en"
-              ? "Your request for opening an account has been received already and being processed, you will be notified using the registered Email and phone number."
-              : "تم استلام طلبك لفتح الحساب وجارٍ معالجته. سيتم إشعارك عبر البريد الإلكتروني ورقم الهاتف المسجلين."
-          );
-        } else {
-          // passport error message
-          setError(
-            i18n.language === "en"
-              ? "Already you have Fib account"
-              : "لديك حساب بالفعل."
-          );
-        }
-        setCurrentStep({ step: 1, title: "/", completed: false });
-        handleBack(setCurrentStep, currentStep.step, steps, navigate)
-      }
+      // } else {
+      //   // national number id error message
+      //   if (document === 4) {
+      //     setError(
+      //       i18n.language === "en"
+      //         ? "Your request for opening an account has been received already and being processed, you will be notified using the registered Email and phone number."
+      //         : "تم استلام طلبك لفتح الحساب وجارٍ معالجته. سيتم إشعارك عبر البريد الإلكتروني ورقم الهاتف المسجلين."
+      //     );
+      //   } else {
+      //     // passport error message
+      //     setError(
+      //       i18n.language === "en"
+      //         ? "Already you have Fib account"
+      //         : "لديك حساب بالفعل."
+      //     );
+      //   }
+      //   setCurrentStep({ step: 1, title: "/", completed: false });
+      //   handleBack(setCurrentStep, currentStep.step, steps, navigate)
+      // }
     } else { // user already has an account
       setError(
         i18n.language === "en"

@@ -244,7 +244,9 @@ const Questionaire: React.FC = () => {
             {errorChoose}
           </Typography>
         ) : null}
-        <NavigationBtns isSubmitting={isSubmitting} />
+        <Box sx={{ marginTop: "30px", marginBottom: "20px" }}>
+          <NavigationBtns isSubmitting={isSubmitting} />
+        </Box>
       </form>
     </>
   );
