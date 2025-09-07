@@ -412,5 +412,7 @@
   "jened": "الجند",
   "kadro": "الكدو",
   "closestbranch": "إختر الفرع الأقرب إليك",
-  "janeed": "الجند"
+  "janeed": "الجند",
+  "nationalIDIssueDate": "تاريخ إصدار البطاقة القومية",
+  "nationalIDIssueDateRequired": "تاريخ إصدار الرقم الوطني مطلوب."
 }

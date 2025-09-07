@@ -412,5 +412,7 @@
   "jened": "Jened",
   "kadro": "Kadro",
   "closestbranch": "Choose the branch closest to you",
-  "janeed": "Al Jeneid"
+  "janeed": "Al Jeneid",
+  "nationalIDIssueDate": "National ID Issue Date",
+  "nationalIDIssueDateRequired": "National ID Issue Date is required."
 }
