@@ -168,12 +168,20 @@ export default function PersonalInfo2({
     occupation: z.string().min(1, {
       message:
         i18n.language === "en" ? "Occupation is required." : "المهنة مطلوبة.",
+    }).refine((val) => {
+      return !/\d/.test(val);
+    }, {
+      message: i18n.language === "en" ? "Occupation cannot contain numbers." : "المهنة لا يمكن أن تحتوي على أرقام.",
     }),
     employer: z.string().min(1, {
       message:
         i18n.language === "en"
           ? "Employer is required."
           : "الجهة العاملة مطلوبة.",
+    }).refine((val) => {
+      return !/\d/.test(val);
+    }, {
+      message: i18n.language === "en" ? "Employer cannot contain numbers." : "الجهة العاملة لا يمكن أن تحتوي على أرقام.",
     }),
     averageIncome: z
       .string()
