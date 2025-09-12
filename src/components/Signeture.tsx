@@ -62,6 +62,34 @@ const Signeture: React.FC = () => {
     }
   };
 
+  // Function to determine title based on sex and marital status
+  const getTitleCode = () => {
+    const sex = contextValue.documentData.sex?.toLowerCase();
+    const maritalStatus = contextValue.submittedData.maritalStatus?.toLowerCase();
+    
+    // Case 1: If customer sex is male then p_cust_title = 1
+    if (sex === 'male' || sex === 'm') {
+      return 1;
+    }
+    
+    // Case 2: customer sex is female & marital status is married then p_cust_title = 2
+    if ((sex === 'female' || sex === 'f') && (maritalStatus === 'married' || maritalStatus === 'متزوج' || maritalStatus === 'متزوجة')) {
+      return 2;
+    }
+    
+    // Case 3: If customer sex is female & marital status is unmarried then p_cust_title = 3
+    if ((sex === 'female' || sex === 'f') && (maritalStatus === 'unmarried' || maritalStatus === 'single' || maritalStatus === 'غير متزوج' || maritalStatus === 'غير متزوجة' || maritalStatus === 'أعزب' || maritalStatus === 'عزباء')) {
+      return 3;
+    }
+    
+    // Default fallback based on sex if marital status is unclear
+    if (sex === 'female' || sex === 'f') {
+      return 3; // Default to unmarried for females
+    }
+    
+    return 1; // Default to male
+  };
+
   const handleSubmit = async () => {
     if (img !== "") {
       setIsLoading(true);
@@ -111,7 +139,8 @@ const Signeture: React.FC = () => {
           documentPhotoId: contextValue.documentData.documentPhotoId,
           personalPhotoId: contextValue.documentData.personalPhotoId,
           branchCode: contextValue.submittedData.branch,
-          nationalIDIssueDate: contextValue.nationalIDIssueDate
+          nationalIDIssueDate: contextValue.nationalIDIssueDate,
+          title: getTitleCode() // Added title attribute based on sex and marital status
         };
         const { done, message } = await openCIF(data);
         setDone(done);

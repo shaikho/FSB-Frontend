@@ -157,6 +157,7 @@ export async function onboardingJourney({
               reading: data.documents[0].reading,
               face: data.documents[0].face,
               lookup: data.documents[0].lookup,
+              sex: scanData.front.sex
             });
             setOpen(false);
             setError("");

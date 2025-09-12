@@ -57,6 +57,8 @@ interface AuthContextProps {
   setDocumentPhotoId: React.Dispatch<React.SetStateAction<string | undefined>>;
   personalPhotoId: string | undefined;
   setPersonalPhotoId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  sex: string;
+  setSex: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // Create the context with an initial value
@@ -114,6 +116,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
   const [documentPhotoId, setDocumentPhotoId] = useState<string | undefined>(undefined);
   const [personalPhotoId, setPersonalPhotoId] = useState<string | undefined>(undefined);
+  const [sex, setSex] = useState<string>("");
   const code = countryCode?.substring(1, countryCode.length);
   let phone = phoneNumber === undefined ? "" : phoneNumber;
   phone = phone[0] === "0" ? phone?.substring(1, phone.length) : phone;
@@ -211,6 +214,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setDocumentPhotoId,
     personalPhotoId,
     setPersonalPhotoId,
+    sex,
+    setSex,
   };
 
   return (

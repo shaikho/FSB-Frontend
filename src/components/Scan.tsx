@@ -129,25 +129,22 @@ export default function Scan() {
       <Typography variant="h2" color="primary" textAlign="start">
         {t("noteTitle")}
       </Typography>
-      <ul>
+      <ul style={{ marginBottom: "2rem" }}>
         {notes.map((note) => (
           <li key={note.id}>{t(`${note.title}`)}</li>
         ))}
       </ul>
-      <div
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 1000,
+      
+      <Box
+        sx={{
+          mt: 4,
+          mb: 2,
           backgroundColor: "rgba(255, 255, 255, 0.95)",
           borderRadius: "15px",
           padding: "15px 25px",
           boxShadow: "0 8px 32px rgba(0, 0, 81, 0.3)",
           backdropFilter: "blur(10px)",
           border: "1px solid rgba(255, 255, 255, 0.2)",
-          minWidth: "300px",
         }}
       >
         <Grid
@@ -184,7 +181,7 @@ export default function Scan() {
             {!loading && <ArrowForwardIos />}
           </Button>
         </Grid>
-      </div>
+      </Box>
     </MainLayout>
   );
 }
