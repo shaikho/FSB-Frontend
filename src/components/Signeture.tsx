@@ -139,7 +139,6 @@ const Signeture: React.FC = () => {
           documentPhotoId: contextValue.documentData.documentPhotoId,
           personalPhotoId: contextValue.documentData.personalPhotoId,
           branchCode: contextValue.submittedData.branch,
-          nationalIDIssueDate: contextValue.nationalIDIssueDate,
           title: getTitleCode() // Added title attribute based on sex and marital status
         };
         const { done, message } = await openCIF(data);

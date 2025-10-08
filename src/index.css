@@ -79,3 +79,7 @@ code {
 .uq-logo {
   display: none !important;
 }
+
+#uq_container {
+  z-index: 99999 !important;
+}

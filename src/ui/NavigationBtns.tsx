@@ -50,7 +50,7 @@ const NavigationBtns: React.FC<NavigationBtnsProps> = ({
         bottom: "20px",
         left: "50%",
         transform: "translateX(-50%)",
-        zIndex: 1000,
+        zIndex: 100,
         backgroundColor: "rgba(255, 255, 255, 0.95)",
         borderRadius: "15px",
         padding: "15px 25px",

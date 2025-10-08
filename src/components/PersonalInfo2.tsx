@@ -28,102 +28,8 @@ export default function PersonalInfo2({
 }: TPersonalInfo2Props) {
   const { t, i18n } = useTranslation();
   const { setSubmittedData, submittedData } = useAuth();
-  // State for individual name parts
-  const [motherNameParts, setMotherNameParts] = React.useState(() => {
-    const fullName = submittedData.MotherName || "";
-    const parts = fullName.split(" ");
-    return {
-      first: parts[0] || "",
-      second: parts[1] || "",
-      third: parts[2] || "",
-      fourth: parts[3] || ""
-    };
-  });
 
-  const [partnerNameParts, setPartnerNameParts] = React.useState(() => {
-    const fullName = submittedData.partnerName || "";
-    const parts = fullName.split(" ");
-    return {
-      first: parts[0] || "",
-      second: parts[1] || "",
-      third: parts[2] || "",
-      fourth: parts[3] || ""
-    };
-  });
 
-  // Handle individual name part changes
-  const handleNamePartChange = (
-    nameType: "mother" | "partner",
-    part: "first" | "second" | "third" | "fourth"
-  ) => async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    // Prevent numeric input
-    if (/\d/.test(value)) {
-      return;
-    }
-
-    // Allow more flexible word count per field, but check total limit
-    const words = value.trim().split(/\s+/);
-    if (value.trim() !== "" && words.length > 4) {
-      // Limit individual fields to maximum 4 words to prevent abuse
-      return;
-    }
-
-    if (nameType === "mother") {
-      const newParts = { ...motherNameParts, [part]: value };
-      // Check total word count across all fields
-      const totalWords = [newParts.first, newParts.second, newParts.third, newParts.fourth]
-        .filter(p => p.trim())
-        .map(p => p.trim().split(/\s+/).length)
-        .reduce((sum, count) => sum + count, 0);
-      
-      if (totalWords > 8) {
-        // If total exceeds 8 words, don't update
-        return;
-      }
-      
-      setMotherNameParts(newParts);
-      // Create combined name - only include if ALL four parts are filled
-      const allPartsFilled = newParts.first.trim() && newParts.second.trim() && newParts.third.trim() && newParts.fourth.trim();
-      if (allPartsFilled) {
-        const fullName = [newParts.first, newParts.second, newParts.third, newParts.fourth]
-          .map(p => p.trim())
-          .join(" ");
-        setValue("MotherName", fullName, { shouldValidate: true });
-      } else {
-        // If not all parts are filled, set empty string to trigger validation error
-        setValue("MotherName", "", { shouldValidate: true });
-      }
-      await trigger("MotherName");
-    } else {
-      const newParts = { ...partnerNameParts, [part]: value };
-      // Check total word count across all fields
-      const totalWords = [newParts.first, newParts.second, newParts.third, newParts.fourth]
-        .filter(p => p.trim())
-        .map(p => p.trim().split(/\s+/).length)
-        .reduce((sum, count) => sum + count, 0);
-      
-      if (totalWords > 8) {
-        // If total exceeds 8 words, don't update
-        return;
-      }
-      
-      setPartnerNameParts(newParts);
-      // Create combined name - only include if ALL four parts are filled
-      const allPartsFilled = newParts.first.trim() && newParts.second.trim() && newParts.third.trim() && newParts.fourth.trim();
-      if (allPartsFilled) {
-        const fullName = [newParts.first, newParts.second, newParts.third, newParts.fourth]
-          .map(p => p.trim())
-          .join(" ");
-        setValue("partnerName", fullName, { shouldValidate: true });
-      } else {
-        // If not all parts are filled, set empty string to trigger validation error
-        setValue("partnerName", "", { shouldValidate: true });
-      }
-      await trigger("partnerName");
-    }
-  };
   const { setCurrentStep, currentStep, steps, } = useNavigation();
   const [selectedMaritalStatus, setSelectedMaritalStatus] = React.useState(submittedData.maritalStatus || "");
   const navigate = useNavigate();
@@ -196,35 +102,22 @@ export default function PersonalInfo2({
       }, {
         message: i18n.language === "en" ? "Income must be greater than 0." : "الدخل يجب أن يكون أكبر من 0.",
       }),
-    MotherName: z.string().refine((val) => {
-      if (!val) return false; // Required field
-      if (/\d/.test(val)) return false; // No numbers allowed
-      
-      // We need to validate based on the individual parts, not just the combined string
-      // This validation will be triggered when the combined name is set
-      const words = val.trim().split(/\s+/).filter(word => word.length > 0);
-      // Check total word count (4-8 words total, meaning each field has at least 1 word)
-      if (words.length < 4) return false; // Minimum 4 words (one per field)
-      if (words.length > 8) return false; // Maximum 8 words total
-      return true;
+    MotherName: z.string().min(1, {
+      message: i18n.language === "en" ? "Mother name is required." : "اسم الأم مطلوب.",
+    }).refine((val) => {
+      return !/\d/.test(val); // No numbers allowed
     }, {
-      message: i18n.language === "en" ? "Mother name must have all four parts filled (at least one word each), with 4-8 words total, and does not allow numbers." : "اسم الأم يجب أن يحتوي على الأجزاء الأربعة مملوءة (كلمة واحدة على الأقل لكل جزء)، من 4-8 كلمات إجمالية، ولا يحتوي على أرقام.",
+      message: i18n.language === "en" ? "Mother name cannot contain numbers." : "اسم الأم لا يمكن أن يحتوي على أرقام.",
     }),
     partnerName: z.string().refine((val) => {
       if (selectedMaritalStatus !== "Married") return true;
       if (!val) return false;
       if (/\d/.test(val)) return false; // No numbers allowed
-      
-      // We need to validate based on the individual parts, not just the combined string
-      const words = val.trim().split(/\s+/).filter(word => word.length > 0);
-      // Check total word count (4-8 words total, meaning each field has at least 1 word)
-      if (words.length < 4) return false; // Minimum 4 words (one per field)
-      if (words.length > 8) return false; // Maximum 8 words total
       return true;
     }, {
       message: i18n.language === "en"
-        ? "Partner name must have all four parts filled (at least one word each), with 4-8 words total, and does not allow numbers."
-        : "اسم الزوج يجب أن يحتوي على الأجزاء الأربعة مملوءة (كلمة واحدة على الأقل لكل جزء)، من 4-8 كلمات إجمالية، ولا يحتوي على أرقام.",
+        ? "Partner name is required and cannot contain numbers."
+        : "اسم الزوج مطلوب ولا يمكن أن يحتوي على أرقام.",
     }),
     maritalStatus: z.string().min(1, {
       message: t('maritalStatusErrorMessage')
@@ -303,17 +196,9 @@ export default function PersonalInfo2({
   const maritialStatusRef = useRef<HTMLSelectElement>(null);
   const occupationRef = useRef<HTMLInputElement>(null);
 
-  // Refs for mother name parts
-  const motherFirstRef = useRef<HTMLInputElement>(null);
-  const motherSecondRef = useRef<HTMLInputElement>(null);
-  const motherThirdRef = useRef<HTMLInputElement>(null);
-  const motherFourthRef = useRef<HTMLInputElement>(null);
-
-  // Refs for partner name parts
-  const partnerFirstRef = useRef<HTMLInputElement>(null);
-  const partnerSecondRef = useRef<HTMLInputElement>(null);
-  const partnerThirdRef = useRef<HTMLInputElement>(null);
-  const partnerFourthRef = useRef<HTMLInputElement>(null);
+  // Refs for name inputs
+  const motherNameRef = useRef<HTMLInputElement>(null);
+  const partnerNameRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: any, nextRef: any) => {
     if (e.key === 'Enter') {
@@ -337,70 +222,25 @@ export default function PersonalInfo2({
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("MotherName")}
         </Typography>
-        <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-          <TextField
-            type="text"
-            placeholder={i18n.language === "en" ? "First" : "الأول"}
-            value={motherNameParts.first}
-            onChange={handleNamePartChange("mother", "first")}
-            sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", flex: 1 }}
-            tabIndex={1}
-            inputRef={motherFirstRef}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                motherSecondRef.current?.focus();
-              }
-            }}
-          />
-          <TextField
-            type="text"
-            placeholder={i18n.language === "en" ? "Second" : "الثاني"}
-            value={motherNameParts.second}
-            onChange={handleNamePartChange("mother", "second")}
-            sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", flex: 1 }}
-            inputRef={motherSecondRef}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                motherThirdRef.current?.focus();
-              }
-            }}
-          />
-          <TextField
-            type="text"
-            placeholder={i18n.language === "en" ? "Third" : "الثالث"}
-            value={motherNameParts.third}
-            onChange={handleNamePartChange("mother", "third")}
-            sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", flex: 1 }}
-            inputRef={motherThirdRef}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                motherFourthRef.current?.focus();
-              }
-            }}
-          />
-          <TextField
-            type="text"
-            placeholder={i18n.language === "en" ? "Fourth" : "الرابع"}
-            value={motherNameParts.fourth}
-            onChange={handleNamePartChange("mother", "fourth")}
-            sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", flex: 1 }}
-            inputRef={motherFourthRef}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                maritialStatusRef.current?.focus();
-              }
-            }}
-          />
-        </div>
-        {errors.MotherName && (
-          <Typography variant="body2" color="error" sx={{ fontSize: "12px", mb: 1 }}>
-            {errors.MotherName.message}
-          </Typography>
-        )}
+        <TextField
+          type="text"
+          placeholder={t("MotherName")}
+          error={errors.MotherName?.message !== undefined}
+          helperText={errors.MotherName ? errors.MotherName.message : ""}
+          {...register("MotherName")}
+          sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", marginBottom: "8px" }}
+          tabIndex={1}
+          inputRef={motherNameRef}
+          onBlur={async () => {
+            await trigger("MotherName");
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              maritialStatusRef.current?.focus();
+            }
+          }}
+        />
         <FormControl fullWidth>
           <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
             {t('maritalStatus')}
@@ -424,7 +264,7 @@ export default function PersonalInfo2({
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     if (selectedMaritalStatus !== "Single") {
-                      partnerFirstRef.current?.focus();
+                      partnerNameRef.current?.focus();
                     } else {
                       occupationRef.current?.focus();
                     }
@@ -445,76 +285,27 @@ export default function PersonalInfo2({
             <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
               {t('partnerName')}
             </Typography>
-            <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-              <TextField
-                type="text"
-                placeholder={i18n.language === "en" ? "First" : "الأول"}
-                value={partnerNameParts.first}
-                onChange={handleNamePartChange("partner", "first")}
-                sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", flex: 1 }}
-                tabIndex={3}
-                inputRef={partnerFirstRef}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    partnerSecondRef.current?.focus();
-                  }
-                }}
-              />
-              <TextField
-                type="text"
-                placeholder={i18n.language === "en" ? "Second" : "الثاني"}
-                value={partnerNameParts.second}
-                onChange={handleNamePartChange("partner", "second")}
-                sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", flex: 1 }}
-                inputRef={partnerSecondRef}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    partnerThirdRef.current?.focus();
-                  }
-                }}
-              />
-              <TextField
-                type="text"
-                placeholder={i18n.language === "en" ? "Third" : "الثالث"}
-                value={partnerNameParts.third}
-                onChange={handleNamePartChange("partner", "third")}
-                sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", flex: 1 }}
-                inputRef={partnerThirdRef}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    partnerFourthRef.current?.focus();
-                  }
-                }}
-              />
-              <TextField
-                type="text"
-                placeholder={i18n.language === "en" ? "Fourth" : "الرابع"}
-                value={partnerNameParts.fourth}
-                onChange={handleNamePartChange("partner", "fourth")}
-                sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", flex: 1 }}
-                inputRef={partnerFourthRef}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    occupationRef.current?.focus();
-                  }
-                }}
-              />
-            </div>
-            {errors.partnerName && (
-              <Typography variant="body2" color="error" sx={{ fontSize: "12px", mb: 1 }}>
-                {errors.partnerName.message}
-              </Typography>
-            )}
+            <TextField
+              type="text"
+              placeholder={t('partnerName')}
+              error={errors.partnerName?.message !== undefined}
+              helperText={errors.partnerName ? errors.partnerName.message : ""}
+              {...register("partnerName")}
+              sx={{ borderRadius: "10px", margin: 0, fontSize: "12px", marginBottom: "8px" }}
+              tabIndex={3}
+              inputRef={partnerNameRef}
+              onBlur={async () => {
+                await trigger("partnerName");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  occupationRef.current?.focus();
+                }
+              }}
+            />
           </>
         )}
-
-        {/* Hidden inputs to register the combined names with the form */}
-        <input type="hidden" {...register("MotherName")} />
-        <input type="hidden" {...register("partnerName")} />
 
         <Typography variant="body1" color="initial" m={0} p={0} fontSize={10}>
           {t("occupation")}
