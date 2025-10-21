@@ -408,6 +408,10 @@ export default function PersonalInfo2({
           )}
         />
         <br />
+        <br />
+        <br />
+        <br />
+        <br />
         <NavigationBtns isSubmitting={isSubmitting} />
       </form>
     </>

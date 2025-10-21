@@ -131,8 +131,8 @@ export default function PersonalInfo1({
     });
     const nationalIDNumber = documentData.identityNumber.replace(/-/g, "");
     const isVerified = await IsVerified(nationalIDNumber);
-    setIsLoading(false);
-    if (true) {
+    setIsLoading(false); // make sure this is enabled before pushing
+    if (!isVerified) {
       await updateIsVerified(nationalIDNumber, true);
       const { LivenessCheckJourney } = await import("./LivenessCheckJourney");
       const isNationalIDCheck = false;

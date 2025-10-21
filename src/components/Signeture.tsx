@@ -25,7 +25,7 @@ const ImgPreview = styled("img")({
 const Signeture: React.FC = () => {
   const [error, setPageError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { setSigneture } = useAuth();
+  const { signeture, setSigneture } = useAuth();
   const { t, i18n } = useTranslation();
   const [img, setImg] = useState("");
   const { setCurrentStep, currentStep, setError, setDone } = useNavigation();
@@ -66,27 +66,27 @@ const Signeture: React.FC = () => {
   const getTitleCode = () => {
     const sex = contextValue.documentData.sex?.toLowerCase();
     const maritalStatus = contextValue.submittedData.maritalStatus?.toLowerCase();
-    
+
     // Case 1: If customer sex is male then p_cust_title = 1
     if (sex === 'male' || sex === 'm') {
       return 1;
     }
-    
+
     // Case 2: customer sex is female & marital status is married then p_cust_title = 2
     if ((sex === 'female' || sex === 'f') && (maritalStatus === 'married' || maritalStatus === 'متزوج' || maritalStatus === 'متزوجة')) {
       return 2;
     }
-    
+
     // Case 3: If customer sex is female & marital status is unmarried then p_cust_title = 3
     if ((sex === 'female' || sex === 'f') && (maritalStatus === 'unmarried' || maritalStatus === 'single' || maritalStatus === 'غير متزوج' || maritalStatus === 'غير متزوجة' || maritalStatus === 'أعزب' || maritalStatus === 'عزباء')) {
       return 3;
     }
-    
+
     // Default fallback based on sex if marital status is unclear
     if (sex === 'female' || sex === 'f') {
       return 3; // Default to unmarried for females
     }
-    
+
     return 1; // Default to male
   };
 
@@ -127,7 +127,7 @@ const Signeture: React.FC = () => {
           SubjecttoUSAtaxpayer: contextValue.submittedData.SubjecttoUSAtaxpayer,
           MotherName: contextValue.submittedData.MotherName,
           identityNumber: contextValue.submittedData.identityNumber,
-          signature: contextValue.signeture,
+          signature: signeture,
           document: contextValue.document,
           photo: contextValue.photo,
           language: i18n.language.toUpperCase(),
@@ -136,10 +136,11 @@ const Signeture: React.FC = () => {
           UsResident: contextValue.submittedData.UsResident,
           UsTaxPayer: contextValue.submittedData.UsTaxPayer,
           UsAccount: contextValue.submittedData.UsAccount,
-          documentPhotoId: contextValue.documentData.documentPhotoId,
-          personalPhotoId: contextValue.documentData.personalPhotoId,
+          documentPhotoId: contextValue.documentPhotoId,
+          personalPhotoId: contextValue.personalPhotoId,
           branchCode: contextValue.submittedData.branch,
-          title: getTitleCode() // Added title attribute based on sex and marital status
+          title: getTitleCode(), // Added title attribute based on sex and marital status
+          maritalStatus: contextValue.submittedData.maritalStatus?.toLowerCase()
         };
         const { done, message } = await openCIF(data);
         setDone(done);
