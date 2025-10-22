@@ -187,12 +187,9 @@ export const openCIF = async (
   const url = `${BASE_URL}/OpenCIFData`;
   try {
     const response = await axios.post(url, data, {});
-    if (response.data.responseCode === 200) {
+    if (response.data.responseCode === 201) {
       return { done: true, message: response.data.responseMessage };
-    } else if (response.data.responseCode === 201) {
-      return { done: true, message: response.data.responseMessage };
-    }
-    else return { done: false, message: response.data.responseMessage };
+    } else return { done: false, message: response.data.responseMessage };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       return { done: false, message: error.message };
