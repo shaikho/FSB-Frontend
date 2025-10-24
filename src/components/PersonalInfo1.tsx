@@ -267,7 +267,7 @@ export default function PersonalInfo1({
           render={({ field }) => (
             <Select
               id="gender"
-              disabled={watch("gender") !== ""}
+              disabled={document === 3 && watch("gender") !== ""}
               {...field}
               error={errors.gender?.message !== undefined}
               sx={{ width: "100%" }}

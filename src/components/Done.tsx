@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthProvider";
 export default function Done() {
   const { t } = useTranslation();
-  const { done, error, setCurrentStep, setIsChecked } = useNavigation();
+  const { done, error, setError, setCurrentStep, setIsChecked } = useNavigation();
   const {
     setAgree,
     setEmail,
@@ -50,6 +50,7 @@ export default function Done() {
       address: "",
       nationalIDNumber: "",
     });
+    setError("");
     setSubmittedData({
       fullNameEnglish: "",
       fullNameArabic: "",
