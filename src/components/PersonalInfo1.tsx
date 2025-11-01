@@ -20,7 +20,7 @@ type TPersonalInfo1Props = {
 export default function PersonalInfo1({
   setPersonalInfoStep,
 }: TPersonalInfo1Props) {
-  const { document, setLivenessCheck, livenessCheckSessionId, documentData, submittedData, setSubmittedData, uqudoToken, setShowNationalNumberForm } = useAuth();
+  const { document, setDocument, setLivenessCheck, livenessCheckSessionId, documentData, setDocumentData, submittedData, setSubmittedData, uqudoToken, setShowNationalNumberForm } = useAuth();
   const {
     setDone,
     setCurrentStep,
@@ -129,6 +129,13 @@ export default function PersonalInfo1({
       dateofIssue: formdata.dateofIssue,
       dateofexpiry: formdata.dateofexpiry,
     });
+
+    // Update documentData.sex with the selected gender to ensure it's available in later components
+    setDocumentData({
+      ...documentData,
+      sex: formdata.gender,
+    });
+
     const nationalIDNumber = documentData.identityNumber.replace(/-/g, "");
     const isVerified = await IsVerified(nationalIDNumber);
     setIsLoading(false); // make sure this is enabled before pushing
