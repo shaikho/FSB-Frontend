@@ -40,31 +40,31 @@ export default function PersonalInfo2({
     { id: 4, title: t('widowed'), value: "Widowed" },
   ];
   const branches = [
-    { code: "1", title: t("port_sudan") },
-    { code: "2", title: t("gadaref") },
-    { code: "3", title: t("white_nile") },
-    { code: "4", title: t("wad_madani") },
-    { code: "5", title: t("omdurman") },
-    { code: "6", title: t("damazin") },
-    { code: "7", title: t("managil") },
-    { code: "8", title: t("sinnar") },
-    { code: "9", title: t("blue_nile") },
-    { code: "10", title: t("halfa_jadida") },
-    { code: "11", title: t("sajana") },
-    { code: "12", title: t("rabak") },
-    { code: "13", title: t("hasahisa") },
-    { code: "14", title: t("souk_libya") },
-    { code: "15", title: t("khartoum") },
-    { code: "16", title: t("khartoum_2") },
-    { code: "17", title: t("khartoum_bahri") },
-    { code: "18", title: t("jumhuriya") },
-    { code: "19", title: t("local_market") },
-    { code: "20", title: t("garden_city") },
-    { code: "21", title: t("riyadh") },
-    { code: "22", title: t("atbara") },
-    { code: "23", title: t("mamoura") },
-    { code: "24", title: t("janeed") },
-    { code: "25", title: t("kadro") },
+    { code: "2", title: t("port_sudan") },
+    { code: "3", title: t("gadaref") },
+    { code: "4", title: t("white_nile") },
+    { code: "5", title: t("wad_madani") },
+    { code: "6", title: t("omdurman") },
+    { code: "7", title: t("damazin") },
+    { code: "8", title: t("managil") },
+    { code: "9", title: t("sinnar") },
+    { code: "10", title: t("nyala") },
+    { code: "11", title: t("halfa_jadida") },
+    { code: "12", title: t("sajana") },
+    { code: "13", title: t("rabak") },
+    { code: "14", title: t("hasahisa") },
+    { code: "15", title: t("souk_libya") },
+    { code: "16", title: t("khartoum") },
+    { code: "17", title: t("khartoum_2") },
+    { code: "18", title: t("khartoum_bahri") },
+    { code: "19", title: t("jumhuriya") },
+    { code: "20", title: t("local_market") },
+    { code: "21", title: t("garden_city") },
+    { code: "22", title: t("riyadh") },
+    { code: "23", title: t("atbara") },
+    { code: "24", title: t("mamoura") },
+    { code: "25", title: t("janeed") },
+    { code: "26", title: t("kadro") },
   ];
   const schma = z.object({
     address: z.string().min(5, {
@@ -184,8 +184,7 @@ export default function PersonalInfo2({
       placeOfResidency: formdata.placeOfResidency ? formdata.placeOfResidency : "N/A",
       branch: formdata.branch,
     });
-    console.log('mother name:', formdata.MotherName);
-    console.log('partner name:', formdata.partnerName);
+    console.log('branch:', formdata.branch);
     setPersonalInfoStep(2);
     handleNext(setCurrentStep, currentStep.step, steps, navigate);
   };

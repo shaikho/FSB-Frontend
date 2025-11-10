@@ -32,33 +32,71 @@ const Signeture: React.FC = () => {
   const navigate = useNavigate();
   const contextValue = useAuth();
 
+  // Function to resize image to fit within 750x1500 dimensions
+  const resizeImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      img.onload = () => {
+        // Maximum dimensions
+        const maxWidth = 750;
+        const maxHeight = 1500;
+        
+        let { width, height } = img;
+        
+        // Calculate new dimensions while maintaining aspect ratio
+        if (width > maxWidth || height > maxHeight) {
+          const widthRatio = maxWidth / width;
+          const heightRatio = maxHeight / height;
+          const ratio = Math.min(widthRatio, heightRatio);
+          
+          width = width * ratio;
+          height = height * ratio;
+        }
+        
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and resize image
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        // Convert to base64
+        const resizedDataURL = canvas.toDataURL('image/jpeg', 0.8);
+        resolve(resizedDataURL);
+      };
+
+      img.onerror = () => {
+        reject(new Error('Failed to load image'));
+      };
+
+      // Create object URL for the image
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   // Handler for file input change
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const base64Result = e.target?.result;
-        if (base64Result) {
-          // Set the Base64 string for signature immediately
-          setSigneture(base64Result);
-          // Also set the image URL for preview
-          setImg(base64Result as string);
-          console.log("File converted to Base64:", base64Result);
-        } else {
-          console.error("Failed to convert file to Base64");
-          setSigneture(null);
-        }
-      };
-
-      reader.onerror = (e) => {
-        console.error("FileReader error", e);
+      try {
+        // Resize image before converting to Base64
+        const resizedBase64 = await resizeImage(file);
+        
+        // Set the resized Base64 string for signature
+        setSigneture(resizedBase64);
+        // Also set the image URL for preview
+        setImg(resizedBase64);
+        console.log("File resized and converted to Base64:", resizedBase64);
+        
+      } catch (error) {
+        console.error("Error processing image:", error);
         setSigneture(null);
         setImg("");
-      };
-
-      // Read the file as Base64 data URL
-      reader.readAsDataURL(file);
+        setPageError(t("imageProcessingError") || "Error processing image");
+      }
     }
   };
 
@@ -92,6 +130,7 @@ const Signeture: React.FC = () => {
 
   const handleSubmit = async () => {
     if (img !== "") {
+      console.log("Submitting signature:", signeture);
       setIsLoading(true);
       try {
         // after successful upload, submit data to backend
